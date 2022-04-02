@@ -1,0 +1,85 @@
+<refs>
+	<!-- <component id="sub" url="./Design/Top.sdml"/>  -->
+	<component id="slots" url="./Design/Slot.sdml" />
+</refs>
+<inputs>
+	<float name="number1" default="5.0" />
+	<float name="number2" default="1.0" />
+	<bool name="test" default="true" />
+</inputs>
+<template>
+
+	<cache number id="sum">
+		<add>
+			<for array="range(int(number1))" iter="num2">
+				<num n="num2" />
+			</for>
+		</add>
+	</cache>
+
+	<collect number id="list">
+		<for array="range(int(number1))" iter="num2">
+			<num n="num2" />
+		</for>
+	</collect>
+
+	<compute int id="compute" exp="10" />
+
+	<!-- 10 - 5 + 5 + 1 + 5 + 1 + 5 = 22 -->
+	<slots a="10.0">
+		<num2 int="5" float="number2" />
+		<num2 int="5" float="number2" />
+		<num n="number1" />
+	</slots>
+
+	<add id="add">
+		<num2 int="1" float="4.0" />
+		<num n="int(#sum.result)" />
+	</add>
+
+	<add>
+		<for array="#list.result" iter="num">
+			<num n="num" />
+		</for>
+	</add>
+
+	<!-- 12*48 = 576 / 13*48 = 624 -->
+	<add>
+		<for array="switch(test, [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0])"
+			iter="num">
+			<for array="[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0]"
+				iter="num2">
+				<num n="1.0" />
+			</for>
+		</for>
+	</add>
+
+	<add>
+		<if test="test">
+			<num n="number1" />
+			<else>
+				<num n="number2" />
+			</else>
+		</if>
+	</add>
+
+	<!-- add - (30+5+5+5, 30+1+1+1) - 78 -->
+	<add>
+		<for array="[number1, number2]" iter="num">
+			<if test="test">
+				<num n="num" />
+				<else>
+					<for array="['hello', 'world', '!']" iter="num2">
+						<slots a="10.0">
+							<num n="5.0" />
+						</slots>
+						<num n="num" />
+					</for>
+				</else>
+			</if>
+		</for>
+	</add>
+</template>
+<outputs>
+	<float name="output" value="#add.result - 1 + #compute.result" />
+</outputs>

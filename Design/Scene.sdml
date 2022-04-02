@@ -1,0 +1,55 @@
+<refs>
+</refs>
+<inputs>
+	<float name="time" />
+	<int name="count" default="10" />
+	<int-arr name="ints" default="[1,2]" />
+</inputs>
+<template>
+	<compute id="distance" float exp="10.0" />
+	<compute id="scale" float exp="time / 10 % 0.25 + 0.1" />
+	<scene>
+		<for array="range(count)" index="x" param:scale="#scale.result">
+			<for array="range(count)" index="y" param:scale2="scale">
+				<mesh pos="vec3(x * 0.5 - 0.5 * count / 2 + 0.5 / 2,y * 0.5 - 0.5 * count / 2 + 0.5 / 2,0)"
+					rot="euler(time + x, (time + y)/2, 0)" scale="vec3(0.25)">
+					<box-geo />
+					<material color="color((time + x/10) % 1.0, 0, (time + y/10 + 0.25) % 1.0)" />
+				</mesh>
+			</for>
+		</for>
+		<mesh pos="vec3(0, 0, ints[0])" rot="euler(time, time / 2, 0)">
+			<box-geo />
+			<if test="count == 1">
+				<material color="color(1, 0, 0)" />
+				<else>
+					<material color="color(1, 1, 0)" />
+				</else>
+			</if>
+		</mesh>
+	</scene>
+
+	<!-- <scene>
+		<mesh rot="euler(time, time / 2, 0)">
+			<box-geo />
+			<if test="count == 1">
+				<material color="color(1, 0, 0)" />
+				<else>
+					<material color="color(1, 1, 0)" />
+				</else>
+			</if>
+		</mesh>
+	</scene> -->
+
+	<perspectivecamera pos="vec3(#distance.result * sin(time), 0, #distance.result * cos(time))"
+		rot="euler(0, time, 0)" />
+
+	<collect number id="ints">
+		<for array="ints" iter="num">
+			<num n="num * 2" />
+		</for>
+	</collect>
+</template>
+<outputs>
+	<int-arr name="ints" value="#ints.result" />
+</outputs>

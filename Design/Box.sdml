@@ -1,0 +1,14 @@
+<flags static />
+<refs>
+</refs>
+<inputs>
+</inputs>
+<template>
+	<mesh>
+		<box-geo />
+		<material />
+		<children>
+			<object3d />
+		</children>
+	</mesh>
+</template>
