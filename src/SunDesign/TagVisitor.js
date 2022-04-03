@@ -15,8 +15,9 @@ export class SDML_Compiler_Visitor {
         this.noderefs = new Set();
         this.params = {};
         this.types_maps = {};
-        if (params !== undefined) {
-            this.parse(params, ast);
+        this.paramstemplate = params;
+        if (this.paramstemplate !== undefined) {
+            this.parse(this.paramstemplate, ast);
         }
         this.auto_bitmasks = auto_bitmasks;
         this.bitmasks = new BitMask([...param_inputs_for_bitmasks, '$default', ...this.constructor.entries.map(i => `$${i}`)]);

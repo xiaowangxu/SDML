@@ -26,7 +26,7 @@ export const TAG_THREE_ExtrudeGeometry_0 =
             bevelSize: i.bevelsize,
             bevelOffset: i.beveloffset,
             bevelSegments: i.bevelsegments,
-            extrudePath: undefined,
+            extrudePath: c.default.curve3d[0],
         };
         const geo = new THREE.ExtrudeGeometry(c.default.shape[0], extrudeSettings);
         this.r = {
@@ -47,7 +47,7 @@ export const TAG_THREE_ExtrudeGeometry_0 =
                 bevelSize: i.bevelsize,
                 bevelOffset: i.beveloffset,
                 bevelSegments: i.bevelsegments,
-                extrudePath: undefined,
+                extrudePath: c.default.curve3d[0],
             };
             this.r.n.extrudegeometry[0] = new THREE.ExtrudeGeometry(c.default.shape[0], extrudeSettings);
             return true;
@@ -94,7 +94,7 @@ class SDML_THREE_ExtrudeGeometry extends SDML_Compiler_Visitor {
             case 'default': {
                 const shape = collection.get_Class('default', 'shape');
                 this.shape = shape[0];
-                const curve = collection.get_Class('default', 'curve');
+                const curve = collection.get_Class('default', 'curve3d');
                 this.curve = curve[0];
                 this.scope.graph.add_Edge(this.shape, this);
                 this.scope.graph.add_Edge(this.curve, this);
@@ -114,7 +114,7 @@ class SDML_THREE_ExtrudeGeometry extends SDML_Compiler_Visitor {
     get_NodeChildren(codegen) {
         switch (this.matched) {
             case 'default': {
-                const ans = { default: { shape: [...this.shape.get_TypeMapped('shape')], curve: [...this.curve.get_TypeMapped('curve')] } };
+                const ans = { default: { shape: [...this.shape.get_TypeMapped('shape')], curve3d: [...this.curve.get_TypeMapped('curve3d')] } };
                 return ans;
             }
         }

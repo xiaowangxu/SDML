@@ -188,6 +188,64 @@ TypesManagerSingleton.extends('curve', 'curveline', {
         default: 'vec2(1)'
     },
 });
+TypesManagerSingleton.extends('curve', 'curveellipse', {
+    center: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0)'
+    },
+    rx: {
+        datatype: ExpTypes.base(ExpTypes.number),
+        default: '1'
+    },
+    ry: {
+        datatype: ExpTypes.base(ExpTypes.number),
+        default: '1'
+    },
+    as: {
+        datatype: ExpTypes.base(ExpTypes.number),
+        default: '0'
+    },
+    ae: {
+        datatype: ExpTypes.base(ExpTypes.number),
+        default: 'TAU'
+    },
+    clockwise: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: 'false'
+    },
+});
+TypesManagerSingleton.extends('curve', 'curvequadbezier', {
+    s: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0)'
+    },
+    c: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0.5, 1)'
+    },
+    e: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(1, 0)'
+    },
+});
+TypesManagerSingleton.extends('curve', 'curvecubicbezier', {
+    s: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0)'
+    },
+    c1: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0.25, 1)'
+    },
+    c2: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(0.75, -1)'
+    },
+    e: {
+        datatype: ExpTypes.base(ExpTypes.vec2),
+        default: 'vec2(1, 0)'
+    },
+});
 TypesManagerSingleton.extends('curve', 'curvepath', {
     closed: {
         datatype: ExpTypes.base(ExpTypes.bool),
@@ -197,4 +255,57 @@ TypesManagerSingleton.extends('curve', 'curvepath', {
 TypesManagerSingleton.extends('curvepath', 'path', {
 });
 TypesManagerSingleton.extends('path', 'shape', {
+});
+//curve3d
+TypesManagerSingleton.extends(null, 'curve3d', {
+});
+TypesManagerSingleton.extends('curve3d', 'curveline3d', {
+    s: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0)'
+    },
+    e: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(1)'
+    },
+});
+TypesManagerSingleton.extends('curve3d', 'curvequadbezier3d', {
+    s: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0)'
+    },
+    c: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0.5, 1, 0)'
+    },
+    e: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(1, 0, 0)'
+    },
+});
+TypesManagerSingleton.extends('curve3d', 'curvecubicbezier3d', {
+    s: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0)'
+    },
+    c1: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0.25, 1, 0)'
+    },
+    c2: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(0.75, -1, 0)'
+    },
+    e: {
+        datatype: ExpTypes.base(ExpTypes.vec3),
+        default: 'vec3(1, 0, 0)'
+    },
+});
+TypesManagerSingleton.extends('curve3d', 'curvepath3d', {
+    closed: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: 'false'
+    }
+});
+TypesManagerSingleton.extends('curvepath3d', 'path3d', {
 });

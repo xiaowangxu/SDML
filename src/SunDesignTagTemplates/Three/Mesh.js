@@ -39,14 +39,14 @@ export const TAG_THREE_Mesh_0 =
         if (this.b[0] & /* scale */ 4){
             mesh.scale.copy(i.scale);
         }
-        if (this.b[0] & /* default */ 8) {
+        if (this.b[0] & /* name */ 8){
+            mesh.name = i.name;
+        }
+        if (this.b[0] & /* default */ 16) {
             if (mesh.geometry !== c.default.geometry[0])
                 mesh.geometry = c.default.geometry[0];
             if (mesh.material !== c.default.material[0])
                 mesh.material = c.default.material[0];
-        }
-        if (this.b[0] & /* name */ 16){
-            mesh.name = i.name;
         }
         if (this.b[0] & /* children */ 32) {
             mesh.clear();

@@ -701,7 +701,7 @@ class SDML_Component extends SDML_Node {
 			console.log(` ${chalk.bold.cyanBright('Component CodeGen')} ${chalk.bold.green('Ended')} : file '${this.url}' code generating finished`);
 		}
 		catch (err) {
-			// console.log(err);
+			console.log(err);
 			throw new Error(`${err.message}\nin ${this.url}`);
 		}
 	}
@@ -784,7 +784,7 @@ function check_Params(params, params_templates, type_maps = []) {
 	return true;
 }
 
-function get_ParamsString(params, arr) {
+export function get_ParamsString(params, arr) {
 	// debugger
 	const ans = [];
 	for (const param_name in params) {
