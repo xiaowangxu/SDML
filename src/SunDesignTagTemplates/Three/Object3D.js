@@ -5,8 +5,8 @@ import { SDML_Compile_CodeGen, create_Component, SDML_Compile_Error } from '../.
 import { SDML_Compiler_Visitor } from '../../SunDesign/TagVisitor.js';
 import { registe_Tag } from '../../SunDesign/TagCollection.js';
 
-// BITMASKS = [name, pos	, rot	, scale , children	]
-// BITMASKS = [1, 2	, 4		, 8 	, 16		]
+// BITMASKS = [name, pos	, rot	, scale , castshadow, receiveshadow, visible, children	]
+// BITMASKS = [1   , 2	    , 4		, 8 	, 16        , 32           , 64     , 128		]
 
 export const TAG_THREE_Object3D_0 =
 {
@@ -19,6 +19,9 @@ export const TAG_THREE_Object3D_0 =
     init(i, c, s) {
         const object3d = new THREE.Object3D();
         object3d.name = i.name;
+        object3d.castShadow = i.castshadow;
+        object3d.receiveShadow = i.receiveshadow;
+        object3d.visible = i.visible;
         object3d.position.copy(i.pos);
         object3d.rotation.copy(i.rot);
         object3d.scale.copy(i.scale);
@@ -43,7 +46,16 @@ export const TAG_THREE_Object3D_0 =
         if (this.b[0] & /* scale */ 8){
             object3d.scale.copy(i.scale);
         }
-        if (this.b[0] & /* children */ 16) {
+        if (this.b[0] & /* castshadow */ 16){
+            object3d.castShadow = i.castshadow;
+        }
+        if (this.b[0] & /* receiveshadow */ 32){
+            object3d.receiveShadow = i.receiveshadow;
+        }
+        if (this.b[0] & /* visible */ 64){
+            object3d.visible = i.visible;
+        }
+        if (this.b[0] & /* children */ 128) {
             object3d.clear();
             c.default.object3d.forEach(o=>object3d.add(o));
         }
@@ -56,7 +68,7 @@ export const TAG_THREE_Object3D_0 =
 
 class SDML_THREE_Object3D extends SDML_Compiler_Visitor {
     constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('object3d'), ['name', 'pos', 'rot', 'scale']);
+        super(scope, name, id, parent, ast, TypesManagerSingleton.param('object3d'), ['name', 'pos', 'rot', 'scale', 'castshadow', 'receiveshadow', 'visible']);
         this.matched = null;
         this.subs = [];
     }

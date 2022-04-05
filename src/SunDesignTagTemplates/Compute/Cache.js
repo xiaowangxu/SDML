@@ -36,7 +36,7 @@ class SDML_Cache extends SDML_Compiler_Visitor {
         // console.log(ast, this);
     }
 
-    static inputs = Types.NONE;
+    static inputs = Types.ANY;
 
     to_Mermaid(ans, link) {
         ans.push(`Node_${this.uid}(cache id=${this.id})`);

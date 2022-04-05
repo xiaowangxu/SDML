@@ -2011,6 +2011,28 @@ export const SunDesignExpressionPrelude = {
 				}, "makeColorRGB"]
 			}
 		],
+		"compose": [
+			{
+				inputs: [{
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "quat"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}],
+				export: [{
+					type: "datatype",
+					datatype: "base",
+					value: "mat4"
+				}, 'makeMat4Compose']
+			},
+		],
 		"basis": [
 			{
 				inputs: [{
@@ -2038,7 +2060,15 @@ export const SunDesignExpressionPrelude = {
 				inputs: [{
 					type: "datatype",
 					datatype: "base",
-					value: "vec3"
+					value: "$number"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "$number"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "$number"
 				}],
 				export: [{
 					type: "datatype",
@@ -2046,59 +2076,27 @@ export const SunDesignExpressionPrelude = {
 					value: "mat4"
 				}, 'makeMat4Translate']
 			},
-			{
-				inputs: [{
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}, {
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}, {
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}],
-				export: [{
-					type: "datatype",
-					datatype: "base",
-					value: "mat4"
-				}, 'makeMat4Translate_0']
-			},
 		],
 		"scale": [
 			{
 				inputs: [{
 					type: "datatype",
 					datatype: "base",
-					value: "vec3"
+					value: "$number"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "$number"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "$number"
 				}],
 				export: [{
 					type: "datatype",
 					datatype: "base",
 					value: "mat4"
 				}, 'makeMat4Scale']
-			},
-			{
-				inputs: [{
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}, {
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}, {
-					type: "datatype",
-					datatype: "base",
-					value: "$number"
-				}],
-				export: [{
-					type: "datatype",
-					datatype: "base",
-					value: "mat4"
-				}, 'makeMat4Scale_0']
 			}
 		],
 		"rotate": [
@@ -2112,7 +2110,19 @@ export const SunDesignExpressionPrelude = {
 					type: "datatype",
 					datatype: "base",
 					value: "mat4"
-				}, 'makeMat4Rotate']
+				}, 'makeMat4RotateEuler']
+			},
+			{
+				inputs: [{
+					type: "datatype",
+					datatype: "base",
+					value: "quat"
+				}],
+				export: [{
+					type: "datatype",
+					datatype: "base",
+					value: "mat4"
+				}, 'makeMat4RotateQuaternion']
 			},
 		],
 		"rotateX": [
@@ -2129,7 +2139,7 @@ export const SunDesignExpressionPrelude = {
 				}, 'makeMat4RotateX']
 			},
 		],
-		"rotatey": [
+		"rotateY": [
 			{
 				inputs: [{
 					type: "datatype",
@@ -2780,7 +2790,6 @@ const SunDesignExpressionOptimizations = {
 		"^": (left, right) => { return left ** right },
 		"&&": (left, right) => { return left && right },
 		"||": (left, right) => { return left || right },
-
 		"==": (left, right) => { return left === right },
 		"!=": (left, right) => { return left !== right },
 		">": (left, right) => { return left > right },
@@ -2826,6 +2835,69 @@ const SunDesignExpressionOptimizations = {
 		// quat
 		multQuatQuat: (quat1, quat2) => {
 			return OptQuaternion.multiply(quat1.value, quat2.value)
+		},
+
+		// mat4
+		multMat4: (a, b) => {
+			return OptMatrix4.multiply(a.value, b.value)
+		},
+		makeMat4Compose: (pos, quat, scale) => {
+			const _pos = pos.value.toTHREEVector3()
+			const _quat = quat.value.toTHREEQuaternion()
+			const _scale = scale.value.toTHREEVector3()
+			return OptMatrix4.toOptMatrix4((new Matrix4().compose(_pos, _quat, _scale)))
+		},
+		makeMat4Basis: (x, y, z) => {
+			const _x = x.value.toTHREEVector3()
+			const _y = y.value.toTHREEVector3()
+			const _z = z.value.toTHREEVector3()
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeBasis(_x, _y, _z)))
+		},
+		makeMat4Translate: (x, y, z) => {
+			const _x = x.value
+			const _y = y.value
+			const _z = z.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeTranslation(_x, _y, _z)))
+		},
+		makeMat4Scale: (x, y, z) => {
+			const _x = x.value
+			const _y = y.value
+			const _z = z.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeScale(_x, _y, _z)))
+		},
+		makeMat4RotateEuler: (euler) => {
+			const _euler = euler.value.toTHREEEuler()
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeRotationFromEuler(_euler)))
+		},
+		makeMat4RotateQuaternion: (quat) => {
+			const _quat = quat.value.toTHREEQuaternion()
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeRotationFromQuaternion(_quat)))
+		},
+		makeMat4RotateX: (val) => {
+			const _val = val.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeRotationX(_val)))
+		},
+		makeMat4RotateY: (val) => {
+			const _val = val.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeRotationY(_val)))
+		},
+		makeMat4RotateZ: (val) => {
+			const _val = val.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeRotationZ(_val)))
+		},
+		makeMat4Shear: (xy, xz, yx, yz, zx, zy) => {
+			const _xy = xy.value
+			const _xz = xz.value
+			const _yx = yx.value
+			const _yz = yz.value
+			const _zx = zx.value
+			const _zy = zy.value
+			return OptMatrix4.toOptMatrix4((new Matrix4().makeShear(_xy, _xz, _yx, _yz, _zx, _zy)))
+		},
+		multMat4Vec3: (mat4, vec3) => {
+			const _mat4 = mat4.value.toTHREEMatrix4()
+			const _vec3 = vec3.value.toTHREEVector3()
+			return OptVector3.toOptVector3(_vec3.applyMatrix4(_mat4))
 		},
 
 		// math
@@ -3131,6 +3203,43 @@ const SunDesignExpressionOptimizations = {
 			if (constant) {
 				const euler = OptQuaternion.toEuler(quat.value)
 				return create_Node.value(euler, 'euler')
+			}
+		},
+		// mat4
+		getMat4Invert: (constant, mat4) => {
+			if (constant) {
+				const _mat4 = OptMatrix4.toOptMatrix4(mat4.value.toTHREEMatrix4().invert())
+				return create_Node.value(_mat4, 'mat4')
+			}
+		},
+		getMat4Translate: (constant, mat4) => {
+			if (constant) {
+				const pos = new Vector3()
+				const rot = new Quaternion()
+				const scale = new Vector3()
+				mat4.value.toTHREEMatrix4().decompose(pos, rot, scale)
+				const _vec3 = OptVector3.toOptVector3(pos)
+				return create_Node.value(_vec3, 'vec3')
+			}
+		},
+		getMat4Rotate: (constant, mat4) => {
+			if (constant) {
+				const pos = new Vector3()
+				const rot = new Quaternion()
+				const scale = new Vector3()
+				mat4.value.toTHREEMatrix4().decompose(pos, rot, scale)
+				const _quat = OptQuaternion.toOptQuaternion(rot)
+				return create_Node.value(_quat, 'quat')
+			}
+		},
+		getMat4Scale: (constant, mat4) => {
+			if (constant) {
+				const pos = new Vector3()
+				const rot = new Quaternion()
+				const scale = new Vector3()
+				mat4.value.toTHREEMatrix4().decompose(pos, rot, scale)
+				const _vec3 = OptVector3.toOptVector3(scale)
+				return create_Node.value(_vec3, 'vec3')
 			}
 		},
 	}
@@ -3541,7 +3650,7 @@ class OptQuaternion {
 	}
 
 	static toOptQuaternion(quat) {
-		return new OptEuler(create_Node.value(quat.x, 'float'), create_Node.value(quat.y, 'float'), create_Node.value(quat.z, 'float'), create_Node.value(quat.w, 'float'))
+		return new OptQuaternion(create_Node.value(quat.x, 'float'), create_Node.value(quat.y, 'float'), create_Node.value(quat.z, 'float'), create_Node.value(quat.w, 'float'))
 	}
 
 	static invert(a) {
@@ -3608,22 +3717,22 @@ class OptMatrix4 {
 
 	toTHREEMatrix4() {
 		if (this.constant) {
-			const n11 = n11.value
-			const n12 = n12.value
-			const n13 = n13.value
-			const n14 = n14.value
-			const n21 = n21.value
-			const n22 = n22.value
-			const n23 = n23.value
-			const n24 = n24.value
-			const n31 = n31.value
-			const n32 = n32.value
-			const n33 = n33.value
-			const n34 = n34.value
-			const n41 = n41.value
-			const n42 = n42.value
-			const n43 = n43.value
-			const n44 = n44.value
+			const n11 = this.n11.value
+			const n12 = this.n12.value
+			const n13 = this.n13.value
+			const n14 = this.n14.value
+			const n21 = this.n21.value
+			const n22 = this.n22.value
+			const n23 = this.n23.value
+			const n24 = this.n24.value
+			const n31 = this.n31.value
+			const n32 = this.n32.value
+			const n33 = this.n33.value
+			const n34 = this.n34.value
+			const n41 = this.n41.value
+			const n42 = this.n42.value
+			const n43 = this.n43.value
+			const n44 = this.n44.value
 			const mat4 = new Matrix4()
 			mat4.set(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44)
 			return mat4;
@@ -3736,12 +3845,161 @@ export const SunDesignCodeGenPassVisitor = {
 		const n44 = codegen.walk(val.n44, opt);
 		return `(new ${opt.THREE}.Matrix4().set(${n11}, ${n12}, ${n13}, ${n14}, ${n21}, ${n22}, ${n23}, ${n24}, ${n31}, ${n32}, ${n33}, ${n34}, ${n41}, ${n42}, ${n43}, ${n44}))`
 	},
+	// vec2
+	multScalerVec2: (val, opt, codegen) => {
+		return `${val[0]}.multiplyScalar(${val[1]})`
+	},
+	multScalerVec2_0: (val, opt, codegen) => {
+		return `${val[1]}.multiplyScalar(${val[0]})`
+	},
+	addVec2: (val, opt, codegen) => {
+		return `${val[0]}.add(${val[1]})`
+	},
+	minusVec2: (val, opt, codegen) => {
+		return `${val[0]}.sub(${val[1]})`
+	},
+	dotVec2Vec2: (val, opt, codegen) => {
+		return `${val[0]}.dot(${val[1]})`
+	},
+	multVec2Vec2: (val, opt, codegen) => {
+		return `${val[0]}.cross(${val[1]})`
+	},
+	// vec3
+	multScalerVec3: (val, opt, codegen) => {
+		return `${val[0]}.multiplyScalar(${val[1]})`
+	},
+	multScalerVec3_0: (val, opt, codegen) => {
+		return `${val[1]}.multiplyScalar(${val[0]})`
+	},
+	addVec3: (val, opt, codegen) => {
+		return `${val[0]}.add(${val[1]})`
+	},
+	minusVec3: (val, opt, codegen) => {
+		return `${val[0]}.sub(${val[1]})`
+	},
+	dotVec3Vec3: (val, opt, codegen) => {
+		return `${val[0]}.dot(${val[1]})`
+	},
+	multVec3Vec3: (val, opt, codegen) => {
+		return `${val[0]}.cross(${val[1]})`
+	},
+	// quat
+	multQuatQuat: (val, opt, codegen) => {
+		return `${val[0]}.multiply(${val[1]})`
+	},
+	// color
 	makeColorRGB: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Color(${val[0]}, ${val[1]}, ${val[2]}))`
+	},
+	// mat4
+	multMat4: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().multiplyMatrices(${val[1]}, ${val[0]}))`
 	},
 	makeMat4Identity: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Matrix4())`
 	},
+	makeMat4Compose: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().compose(${val[0]}, ${val[1]}, ${val[2]}))`
+	},
+	makeMat4Basis: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeBasis(${val[0]}, ${val[1]}, ${val[2]}))`
+	},
+	makeMat4Translate: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeTranslation(${val[0]}, ${val[1]}, ${val[2]}))`
+	},
+	makeMat4Scale: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeScale(${val[0]}, ${val[1]}, ${val[2]}))`
+	},
+	makeMat4RotateEuler: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeRotationFromEuler(${val[0]}))`
+	},
+	makeMat4RotateQuaternion: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeRotationFromQuaternion(${val[0]}))`
+	},
+	makeMat4RotateX: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeRotationX(${val[0]}))`
+	},
+	makeMat4RotateY: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeRotationY(${val[0]}))`
+	},
+	makeMat4RotateZ: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeRotationZ(${val[0]}))`
+	},
+	makeMat4Shear: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Matrix4().makeShear(${val[0]}, ${val[1]}, ${val[2]}, ${val[3]}, ${val[4]}, ${val[5]}))`
+	},
+	multMat4Vec3: (val, opt, codegen) => {
+		return `${val[1]}.applyMatrix4(${val[0]})`
+	},
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// struct
+	getArraySize: (val, opt, codegen) => {
+		return `${val[0]}.length`
+	},
+	// vec2
+	getVec2X: (val, opt, codegen) => {
+		return `${val[0]}.x`
+	},
+	getVec2Y: (val, opt, codegen) => {
+		return `${val[0]}.y`
+	},
+	getVec2Normal: (val, opt, codegen) => {
+		return `${val[0]}.normalize()`
+	},
+	getVec2Length: (val, opt, codegen) => {
+		return `${val[0]}.length()`
+	},
+	// vec3
+	getVec3X: (val, opt, codegen) => {
+		return `${val[0]}.x`
+	},
+	getVec3Y: (val, opt, codegen) => {
+		return `${val[0]}.y`
+	},
+	getVec3Z: (val, opt, codegen) => {
+		return `${val[0]}.z`
+	},
+	getVec3Normal: (val, opt, codegen) => {
+		return `${val[0]}.normalize()`
+	},
+	getVec3Length: (val, opt, codegen) => {
+		return `${val[0]}.length()`
+	},
+	// euler
+	getEulerX: (val, opt, codegen) => {
+		return `${val[0]}.x`
+	},
+	getEulerY: (val, opt, codegen) => {
+		return `${val[0]}.y`
+	},
+	getEulerZ: (val, opt, codegen) => {
+		return `${val[0]}.z`
+	},
+	// euler
+	getEulerQuat: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Quaternion().setFromEuler(${val[0]}))`
+	},
+	// quat
+	getQuatInvert: (val, opt, codegen) => {
+		return `${val[0]}.invert()`
+	},
+	getQuatEuler: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Euler().setFromQuaternion(${val[0]}))`
+	},
+	// mat4
+	getMat4Invert: (val, opt, codegen) => {
+		return `${val[0]}.invert()`
+	},
+	getMat4Translate: (val, opt, codegen) => {
+		return `(()=>{const _p = new ${opt.THREE}.Vector3(); const _r = new ${opt.THREE}.Quaternion(); const _s = new ${opt.THREE}.Vector3(); ${val[0]}.decompose(_p, _r, _s); return _p;})()`
+	},
+	getMat4Rotate: (val, opt, codegen) => {
+		return `(()=>{const _p = new ${opt.THREE}.Vector3(); const _r = new ${opt.THREE}.Quaternion(); const _s = new ${opt.THREE}.Vector3(); ${val[0]}.decompose(_p, _r, _s); return _r;})()`
+	},
+	getMat4Scale: (val, opt, codegen) => {
+		return `(()=>{const _p = new ${opt.THREE}.Vector3(); const _r = new ${opt.THREE}.Quaternion(); const _s = new ${opt.THREE}.Vector3(); ${val[0]}.decompose(_p, _r, _s); return _s;})()`
+	},
+	// funcs
 	switch: (val, opt, codegen) => {
 		const [test, a, b] = val
 		return `(${test} ? ${a} : ${b})`
@@ -3750,9 +4008,6 @@ export const SunDesignCodeGenPassVisitor = {
 	array_take: (val, opt, codegen) => {
 		return `${val[0]}[${val[1]}]`
 	},
-	getArraySize: (val, opt, codegen) => {
-		return `${val[0]}.length`
-	}
 }
 
 class CodeGenPass {

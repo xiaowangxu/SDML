@@ -75,10 +75,10 @@ if (opts.m !== false) {
 		const params = TypesManagerSingleton.param(nodename);
 
 		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.white.bold("SIGNATURE") + chalk.bgMagenta(" ") + '\n');
-		console.log(`  <${nodename} ${params === undefined ? '' : Object.entries(params).map(([key, value]) => {
-			if (value.default !== undefined) return `[${key}]="${typeToString(value.datatype)}"`;
-			return `${key}="${typeToString(value.datatype)}"`;
-		}).join(" ")}/>`);
+		console.log(`  ${chalk.bold('<')}${chalk.redBright.bold(nodename)} ${params === undefined ? '' : Object.entries(params).map(([key, value]) => {
+			if (value.default !== undefined) return `[${chalk.blueBright.bold.italic(key)}]=${chalk.greenBright.bold(`"${typeToString(value.datatype)}"`)}`;
+			return `${chalk.blueBright.bold.italic(key)}=${chalk.greenBright.bold(`"${typeToString(value.datatype)}"`)}`;
+		}).join(" ")}${chalk.bold('/>')}`);
 
 		console.log('  \\\n    ' + chalk.bgCyan(" ") + chalk.bgCyan.white.bold("OUTPUT") + chalk.bgCyan(" ") + '\n');
 		console.log(`${node.type === null ? '    not determined' : node.type.to_List().map(i => `    ${i}`).join('\n')}`);
@@ -152,7 +152,7 @@ else {
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				if (!opts.test)
-					writeFile(opts.o, `import * as THREE from '${opts.three}';\n\n${code}\n\nexport { ${entry} as ${opts.e} };`).then(() => {
+					writeFile(opts.o, `import * as THREE from '${opts.three}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));

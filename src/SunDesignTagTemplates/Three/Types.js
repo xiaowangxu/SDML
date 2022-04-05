@@ -6,6 +6,18 @@ TypesManagerSingleton.extends(null, 'object3d', {
         datatype: ExpTypes.base(ExpTypes.string),
         default: "'unnamed'"
     },
+    castshadow: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: "true"
+    },
+    receiveshadow: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: "true"
+    },
+    visible: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: "true"
+    },
     pos: {
         datatype: ExpTypes.base(ExpTypes.vec3),
         default: 'vec3(0)'
@@ -31,6 +43,24 @@ TypesManagerSingleton.extends('object3d', 'mesh', {
 TypesManagerSingleton.extends('object3d', 'camera', {
 
 });
+TypesManagerSingleton.extends('object3d', 'light', {
+    color: {
+        datatype: ExpTypes.base(ExpTypes.color),
+        default: 'color(1,1,1)'
+    },
+    intensity: {
+        datatype: ExpTypes.base(ExpTypes.number),
+        default: '1'
+    },
+});
+TypesManagerSingleton.extends('light', 'ambientlight', {
+    castshadow: {
+        datatype: ExpTypes.base(ExpTypes.bool),
+        default: "false"
+    },
+});
+TypesManagerSingleton.extends('light', 'directionallight', {
+});
 TypesManagerSingleton.extends('camera', 'perspectivecamera', {
     fov: {
         datatype: ExpTypes.base(ExpTypes.number),
@@ -45,6 +75,7 @@ TypesManagerSingleton.extends('camera', 'perspectivecamera', {
         default: '1000'
     }
 });
+
 //math
 TypesManagerSingleton.extends(null, 'vec2', {
     x: {
@@ -309,3 +340,12 @@ TypesManagerSingleton.extends('curve3d', 'curvepath3d', {
 });
 TypesManagerSingleton.extends('curvepath3d', 'path3d', {
 });
+// loader
+TypesManagerSingleton.extends(null, 'loader', {
+    url: { datatype: ExpTypes.base(ExpTypes.string) }
+});
+TypesManagerSingleton.extends('loader', 'stl', {
+});
+TypesManagerSingleton.extends('loader', 'obj', {
+});
+

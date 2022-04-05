@@ -307,6 +307,7 @@ export class Environment {
 		loaders = { component: ComponentWebLoader, ...loaders };
 		this.loaders = {};
 		this.used_templates = new Map();
+		this.load_template_name = "$loading";
 		for (let key in loaders) {
 			this.loaders[key] = new loaders[key](this);
 		}
@@ -330,14 +331,23 @@ export class Environment {
 	}
 
 	load(loader, url, ast) {
-		if (this.caches[url] !== undefined) return Promise.resolve();
-		this.caches[url] = null;
+		if (this.caches[url] !== undefined) {
+			if (this.caches[url] instanceof Promise) {
+				console.log(` ${chalk.bold.blueBright.italic.underline("Environment")} : file '${url}' is already in the loading queue`);
+				return this.caches[url];
+			}
+			else {
+				console.log(` ${chalk.bold.blueBright.italic.underline("Environment")} : file '${url}' is already loaded`);
+				return Promise.resolve();
+			}
+		}
 		const promise = this.loaders[loader].load(url, ast).then((component) => {
 			this.caches[url] = component;
 			if (component instanceof SDML_Node) {
 				component.compile();
 			}
 		})
+		this.caches[url] = promise;
 		return promise;
 	}
 
@@ -439,7 +449,6 @@ class SDML_Component extends SDML_Node {
 			this.collect_Resources();
 		}
 		catch (err) {
-			console.log(err);
 			throw new Error(`${err.message}\nin ${this.url}`);
 		}
 	}
@@ -701,7 +710,7 @@ class SDML_Component extends SDML_Node {
 			console.log(` ${chalk.bold.cyanBright('Component CodeGen')} ${chalk.bold.green('Ended')} : file '${this.url}' code generating finished`);
 		}
 		catch (err) {
-			console.log(err);
+			// console.log(err);
 			throw new Error(`${err.message}\nin ${this.url}`);
 		}
 	}

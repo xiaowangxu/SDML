@@ -5,8 +5,8 @@ import { SDML_Compile_CodeGen, create_Component, SDML_Compile_Error } from '../.
 import { SDML_Compiler_Visitor } from '../../SunDesign/TagVisitor.js';
 import { registe_Tag } from '../../SunDesign/TagCollection.js';
 
-// BITMASKS = [pos	, rot	, scale , name    , default	, children	]
-// BITMASKS = [1	, 2		, 4 	, 8       , 16			, 32		]
+// BITMASKS = [pos	, rot	, scale , name    , castshadow, receiveshadow, visible, default	, children	]
+// BITMASKS = [1	, 2		, 4 	, 8       , 16        , 32           , 64     , 128		, 256		]
 
 export const TAG_THREE_Mesh_0 =
 {
@@ -18,6 +18,9 @@ export const TAG_THREE_Mesh_0 =
     init(i, c, s) {
         const mesh = new THREE.Mesh(c.default.geometry[0], c.default.material[0]);
         mesh.name = i.name;
+        mesh.castShadow = i.castshadow;
+        mesh.receiveShadow = i.receiveshadow;
+        mesh.visible = i.visible;
         mesh.position.copy(i.pos);
         mesh.rotation.copy(i.rot);
         mesh.scale.copy(i.scale);
@@ -42,13 +45,22 @@ export const TAG_THREE_Mesh_0 =
         if (this.b[0] & /* name */ 8){
             mesh.name = i.name;
         }
-        if (this.b[0] & /* default */ 16) {
+        if (this.b[0] & /* castshadow */ 16){
+            mesh.castShadow = i.castshadow;
+        }
+        if (this.b[0] & /* receiveshadow */ 32){
+            mesh.receiveShadow = i.receiveshadow;
+        }
+        if (this.b[0] & /* visible */ 64){
+            mesh.visible = i.visible;
+        }
+        if (this.b[0] & /* default */ 128) {
             if (mesh.geometry !== c.default.geometry[0])
                 mesh.geometry = c.default.geometry[0];
             if (mesh.material !== c.default.material[0])
                 mesh.material = c.default.material[0];
         }
-        if (this.b[0] & /* children */ 32) {
+        if (this.b[0] & /* children */ 256) {
             mesh.clear();
             c.children.object3d.forEach(o=>mesh.add(o));
         }
@@ -61,7 +73,7 @@ export const TAG_THREE_Mesh_0 =
 
 class SDML_THREE_Mesh extends SDML_Compiler_Visitor {
     constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('mesh'), ['pos', 'rot', 'scale', 'name']);
+        super(scope, name, id, parent, ast, TypesManagerSingleton.param('mesh'), ['pos', 'rot', 'scale', 'name', 'castshadow', 'receiveshadow', 'visible']);
         this.matched = null;
         this.geo = null;
         this.mats = [];

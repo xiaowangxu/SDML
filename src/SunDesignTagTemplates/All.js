@@ -11,6 +11,8 @@ import './Three/PerspectiveCamera.js';
 import './Three/Object3D.js';
 import './Three/Scene.js';
 import './Three/Mesh.js';
+import './Three/Light/AmbientLight.js'
+import './Three/Light/DirectionalLight.js'
 import './Three/Geometry/BoxGeometry.js';
 import './Three/Geometry/SphereGeometry.js';
 import './Three/Geometry/ExtrudeGeometry.js';
@@ -24,3 +26,5 @@ import './Three/Curve/CubicBezier.js';
 import './Three/Curve/CubicBezier3D.js';
 import './Three/Curve/Path.js';
 import './Three/Curve/Shape.js';
+import './Three/Loader/STL.js';
+import './Three/Loader/OBJ.js';
