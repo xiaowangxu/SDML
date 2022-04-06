@@ -81,7 +81,7 @@ class SDML_THREE_ExtrudeGeometry extends SDML_Compiler_Visitor {
     static exports = {};
 
     to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(shape id=${this.id} match=${this.matched})`);
+        ans.push(`Node_${this.uid}(extrude-geometry id=${this.id} match=${this.matched})`);
         if (this.matched === 'default') {
             link.push(`Node_${this.shape.uid} -->|shape| Node_${this.uid}`);
             link.push(`Node_${this.curve.uid} -->|curve| Node_${this.uid}`);

@@ -33,7 +33,7 @@ program
 	.option('-f <path>', "the path of the source file", "main.sdml")
 	.option('-e <entry>', "the name of the input sdml component", "main")
 	.option('-o <path>', "the name of the output sdml compiled js file", "main.js")
-	.option('-m <path>', "get manual", false)
+	.option('-m [path]', "get manual", false)
 	.option('--mermaid [path]', "output mermaid data", false)
 	.option('--flowchart [path]', "output mmd flowchart data", false)
 	.option('--three <path>', "output mermaid data", "Three.js")
@@ -56,15 +56,17 @@ function Time() {
 	return (process.hrtime(time_start)[0] + "s, " + elapsed.toFixed(precision) + "ms"); // print message + time
 }
 
-
 if (opts.m !== false) {
+	if (opts.m === true) opts.m = 'listall';
 	console.log('');
 	console.log(chalk.italic.bold(MANUAL) + `version:${VERSION}`);
 	console.log('');
 	if (opts.m === 'listall') {
 		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.white.bold("ALL NODES") + chalk.bgMagenta(" ") + '\n');
-		for (const name in ALL_NODE_TYPES) {
-			console.log(`  <${name} />`);
+		const names = Object.keys(ALL_NODE_TYPES);
+		names.sort();
+		for (const name of names) {
+			console.log(`  <${chalk.redBright.bold(name)} />`);
 		}
 		console.log("");
 		process.exit();
@@ -76,9 +78,9 @@ if (opts.m !== false) {
 
 		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.white.bold("SIGNATURE") + chalk.bgMagenta(" ") + '\n');
 		console.log(`  ${chalk.bold('<')}${chalk.redBright.bold(nodename)} ${params === undefined ? '' : Object.entries(params).map(([key, value]) => {
-			if (value.default !== undefined) return `[${chalk.blueBright.bold.italic(key)}]=${chalk.greenBright.bold(`"${typeToString(value.datatype)}"`)}`;
-			return `${chalk.blueBright.bold.italic(key)}=${chalk.greenBright.bold(`"${typeToString(value.datatype)}"`)}`;
-		}).join(" ")}${chalk.bold('/>')}`);
+			if (value.default !== undefined) return `[${chalk.blueBright.bold.italic(key)}]:${chalk.cyan.bold(typeToString(value.datatype))}=${chalk.greenBright.bold(`"${value.default}"`)}`;
+			return `${chalk.blueBright.bold.italic(key)}:${chalk.cyan.bold(typeToString(value.datatype))}`;
+		}).join(" ")}${chalk.bold(' />')}`);
 
 		console.log('  \\\n    ' + chalk.bgCyan(" ") + chalk.bgCyan.white.bold("OUTPUT") + chalk.bgCyan(" ") + '\n');
 		console.log(`${node.type === null ? '    not determined' : node.type.to_List().map(i => `    ${i}`).join('\n')}`);
@@ -125,7 +127,7 @@ else {
 				const str = mermaid_str;
 				const filepath = opts.flowchart === true ? 'flowchart.mmd' : opts.flowchart;
 				console.log(chalk.blueBright.bold(` FlowChart Gening `) + ' : finished');
-				writeFile(filepath, str).then(() => {
+				return writeFile(filepath, str).then(() => {
 				}).catch(err => {
 					console.log(chalk.red.bold(`Failed to write file '${filepath}'\nmore info:`));
 					console.log(chalk.red(`  ${err.message}`));
@@ -140,7 +142,7 @@ else {
 				const str = code.map(({ url, mermaid }) => `File: ${url}\n${mermaid}`).join("\n=============================================================================\n");
 				const filepath = opts.mermaid === true ? 'mermaid.txt' : opts.mermaid;
 				console.log(chalk.blueBright.bold(` Mermaid Gening`) + ' : finished');
-				writeFile(filepath, str).then(() => {
+				return writeFile(filepath, str).then(() => {
 				}).catch(err => {
 					console.log(chalk.red.bold(`Failed to write file '${filepath}'\nmore info:`));
 					console.log(chalk.red(`  ${err.message}`));
@@ -152,7 +154,7 @@ else {
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				if (!opts.test)
-					writeFile(opts.o, `import * as THREE from '${opts.three}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));
@@ -162,15 +164,18 @@ else {
 		}).then(() => {
 			console.log(chalk.bgGreen.white.bold(` Compile Finished `));
 			console.log(` in ${Time()}\n`);
+			process.exit(0);
 		}).catch(err => {
 			console.log(chalk.bgRedBright.white.bold(`  Error Occoured  `));
 			console.log(chalk.redBright.bold(`Failed to compile file '${opts.f}'\nmore info:`));
 			console.log(err.message);
 			console.log(chalk.bgRedBright.white.bold(`  Compile Failed  \n`));
+			process.exit(1);
 		})
 	}
 	catch (err) {
 		console.log(chalk.red.bold(`Failed to compile file '${opts.f}'\nmore info:`));
 		console.log(chalk.red(`  ${err.message}`));
+		process.exit(1);
 	}
 }

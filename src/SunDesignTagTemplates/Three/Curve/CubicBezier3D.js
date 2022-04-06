@@ -42,7 +42,7 @@ class component_THREE_CurveCubicBezier3D extends SDML_Compiler_Visitor {
     static inputs = Types.NONE;
 
     to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(curve-cubic-bezier id=${this.id})`);
+        ans.push(`Node_${this.uid}(curve-cubic-bezier-3d id=${this.id})`);
     }
 
     add_ToCollection(collection, param) {
