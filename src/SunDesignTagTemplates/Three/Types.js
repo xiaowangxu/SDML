@@ -326,6 +326,12 @@ TypesManagerSingleton.extends(null, 'geometry-transform', {
         datatype: ExpTypes.base(ExpTypes.mat4)
     },
 });
+TypesManagerSingleton.extends(null, 'csg-union', {
+});
+TypesManagerSingleton.extends(null, 'csg-sub', {
+});
+TypesManagerSingleton.extends(null, 'csg-intersect', {
+});
 //material
 TypesManagerSingleton.extends(null, 'material', {
 });

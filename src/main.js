@@ -36,7 +36,8 @@ program
 	.option('-m [path]', "get manual", false)
 	.option('--mermaid [path]', "output mermaid data", false)
 	.option('--flowchart [path]', "output mmd flowchart data", false)
-	.option('--three <path>', "output mermaid data", "Three.js")
+	.option('--three <path>', "import three path", "Three.js")
+	.option('--csg <path>', "import csg path", "CSG.js")
 	.option('--no-for-diff', "set compile flag forDiff to false")
 	.option('--no-if-cache', "set compile flag ifBranchCache to false")
 	.option('--no-const-inline', "set compile flag inlineConstantExp to false")
@@ -154,7 +155,7 @@ else {
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				if (!opts.test)
-					return writeFile(opts.o, `import * as THREE from '${opts.three}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));
