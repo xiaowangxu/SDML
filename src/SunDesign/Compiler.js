@@ -308,6 +308,7 @@ export class Environment {
 		this.loaders = {};
 		this.used_templates = new Map();
 		this.load_template_name = "$loading";
+		this.wait_to_dispose = new Set();
 		for (let key in loaders) {
 			this.loaders[key] = new loaders[key](this);
 		}
@@ -1590,7 +1591,7 @@ export class SDML_Compile_CodeGen {
 		const ans = [];
 		for (const node of [...this.nodes.keys()]) {
 			const node_name = this.get_NodeCache(node);
-			const custom_dispose = node.get_CustomDispose(node_name);
+			const custom_dispose = node.get_CustomDispose(this, node_name);
 			if (custom_dispose !== null) {
 				if (custom_dispose !== '')
 					ans.push(custom_dispose);

@@ -123,7 +123,7 @@ else {
 		ENV.component(opts.e, opts.f);
 		Promise.all(ENV.promises).then(() => {
 			if (opts.flowchart) {
-				console.log(chalk.bgBlueBright.whiteBright.bold(` FlowChart Gening `));
+				console.log(chalk.bgBlueBright.white.bold(` FlowChart Gening `));
 				const mermaid_str = ENV.caches[opts.f].compile_res.to_Mermaid();
 				const str = mermaid_str;
 				const filepath = opts.flowchart === true ? 'flowchart.mmd' : opts.flowchart;
@@ -135,7 +135,7 @@ else {
 				})
 			}
 			else if (opts.mermaid) {
-				console.log(chalk.bgBlueBright.whiteBright.bold(`  Mermaid Gening  `));
+				console.log(chalk.bgBlueBright.white.bold(`  Mermaid Gening  `));
 				const code = [];
 				for (const url in ENV.caches) {
 					code.push({ url, mermaid: ENV.caches[url].compile_res.to_Mermaid() })
@@ -150,12 +150,12 @@ else {
 				})
 			}
 			else {
-				console.log(chalk.bgBlueBright.whiteBright.bold(` Code  Generating `));
+				console.log(chalk.bgBlueBright.white.bold(` Code  Generating `));
 				const code = ENV.generate();
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				if (!opts.test)
-					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nexport { ${entry} as ${opts.e}, $load_promise as onLoad };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}?.dispose()`).join('\n')}\n}\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));

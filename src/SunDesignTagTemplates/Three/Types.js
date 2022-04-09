@@ -178,7 +178,7 @@ TypesManagerSingleton.extends('geometry', 'conegeometry', {
     },
 });
 TypesManagerSingleton.extends('geometry', 'lathegeometry', {
-    s: {
+    rs: {
         datatype: ExpTypes.base(ExpTypes.int),
         default: '16'
     },

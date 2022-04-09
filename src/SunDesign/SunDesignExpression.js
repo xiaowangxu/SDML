@@ -3788,6 +3788,8 @@ export const SunDesignCodeGenPassVisitor = {
 	bool: (val) => val.toString(),
 	float: (val) => val.toString(),
 	string: (val) => `'${val}'`,
+	'_+': (a) => `${a}`,
+	'_-': (a) => `-${a}`,
 	'+': (a, b) => `(${a} + ${b})`,
 	'-': (a, b) => `(${a} - ${b})`,
 	'*': (a, b) => `(${a} * ${b})`,
@@ -4050,7 +4052,7 @@ class CodeGenPass {
 
 	uniop(ast, opt) {
 		const a = this.walk(ast.sub[0], opt);
-		return SunDesignCodeGenPassVisitor[ast.value](a);
+		return SunDesignCodeGenPassVisitor[`_${ast.value}`](a);
 	}
 
 	binop(ast, opt) {

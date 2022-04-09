@@ -165,7 +165,7 @@ export class SDML_Compiler_Visitor {
         return null;
     }
 
-    get_CustomDispose(nodename) {
+    get_CustomDispose(codegen, nodename) {
         return null;
     }
 
@@ -904,7 +904,7 @@ class SDML_Slot extends SDML_Compiler_Visitor {
             `}`,];
     }
 
-    get_CustomDispose(nodename) {
+    get_CustomDispose(codegen, nodename) {
         return `this.${nodename} = undefined;`;
     }
 
@@ -947,7 +947,7 @@ class SDML_Any extends SDML_Compiler_Visitor {
     get_CustomUpdate(codegen, nodename) {
     }
 
-    get_CustomDispose(nodename) {
+    get_CustomDispose(codegen, nodename) {
     }
 
     get_Type() {
@@ -1047,6 +1047,14 @@ export class SDML_ComponentNode extends SDML_Compiler_Visitor {
             }
         })
         return ans;
+    }
+
+    get_CustomDispose(codegen, nodename) {
+        if (this.component.flags.static) {
+            codegen.env.wait_to_dispose.add(this.component.class_name);
+            return '';
+        }
+        return null;
     }
 
     get_Type() {
