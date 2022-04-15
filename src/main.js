@@ -38,6 +38,7 @@ program
 	.option('--flowchart [path]', "output mmd flowchart data", false)
 	.option('--three <path>', "import three path", "Three.js")
 	.option('--csg <path>', "import csg path", "CSG.js")
+	.option('--utils <path>', "import utils path", "Utils.js")
 	.option('--no-for-diff', "set compile flag forDiff to false")
 	.option('--no-if-cache', "set compile flag ifBranchCache to false")
 	.option('--no-const-inline', "set compile flag inlineConstantExp to false")
@@ -154,8 +155,9 @@ else {
 				const code = ENV.generate();
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
+				const exports = [...ENV.exports.entries()];
 				if (!opts.test)
-					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}?.dispose()`).join('\n')}\n}\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\nimport * as UTILS from '${opts.utils}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}?.dispose()`).join('\n')}\n}\nexport {${exports.map(([name, class_name]) => `${class_name} as ${name}`).join(', ')}};\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));

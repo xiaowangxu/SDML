@@ -309,6 +309,7 @@ export class Environment {
 		this.used_templates = new Map();
 		this.load_template_name = "$loading";
 		this.wait_to_dispose = new Set();
+		this.exports = new Map();
 		for (let key in loaders) {
 			this.loaders[key] = new loaders[key](this);
 		}
@@ -368,6 +369,13 @@ export class Environment {
 
 	add_Template(name, code) {
 		this.used_templates.set(name, code);
+	}
+
+	add_Export(name, class_name) {
+		if (this.exports.has(name)) {
+			throw new Error(`duplicated export name '${name}' found`);
+		}
+		this.exports.set(name, class_name);
 	}
 
 	get uid() {
@@ -436,6 +444,7 @@ class SDML_Component extends SDML_Node {
 		};
 		this.flags = {
 			static: false,
+			export: false,
 		};
 		this.sdml = sdml;
 		this.urlmap = {};
@@ -707,6 +716,14 @@ class SDML_Component extends SDML_Node {
 			this.env.add_Template(class_name, code);
 			if (this.flags.static) {
 				this.env.add_Template(this.class_name, `const ${this.class_name} = new ${class_name}();`);
+			}
+			if (!(this.flags.export === false)) {
+				if (!test_IdentifierName(this.flags.export)) {
+					throw new Error(`export name '${this.flags.export}' is not a valid identifier name`);
+				}
+				else {
+					this.env.add_Export(this.flags.export, this.class_name);
+				}
 			}
 			console.log(` ${chalk.bold.cyanBright('Component CodeGen')} ${chalk.bold.green('Ended')} : file '${this.url}' code generating finished`);
 		}

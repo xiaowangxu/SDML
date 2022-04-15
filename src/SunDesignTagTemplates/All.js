@@ -26,6 +26,7 @@ import './Three/Geometry/TetrahedronGeometry.js';
 import './Three/Geometry/TorusGeometry.js';
 import './Three/Geometry/ExtrudeGeometry.js';
 import './Three/Geometry/GeometryTransform.js';
+import './Three/Geometry/GeometryMerge.js';
 import './Three/CSG/Union.js';
 import './Three/CSG/Sub.js';
 import './Three/CSG/Intersect.js';
