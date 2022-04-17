@@ -318,7 +318,7 @@ export class Types {
         return _a;
     }
 
-    match_Types(types, inf = false, ext = false, extends_map = []) {
+    match_Types(types, inf = false, ext = false, extends_map = [], reduced_types = {}) {
         if (types.is_Empty()) return this.types === types.types;
         if (this.is_Empty()) {
             for (let key in types.types) {
@@ -344,6 +344,7 @@ export class Types {
                     if (cnt) last += map.get(keys[idx]);
                     return last;
                 }, 0);
+                reduced_types[key] = count_b;
                 const count_a = types.types[key];
                 // console.log(passeed, count_b);
                 if (!passed/*!map.has(key)*/) {

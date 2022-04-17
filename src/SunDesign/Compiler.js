@@ -797,13 +797,14 @@ export class SDML_Compile_Warning extends Error {
 	}
 }
 
-function check_Params(params, params_templates, type_maps = []) {
+function check_Params(params, params_templates, type_maps = [], reduced_types = {}) {
 	// console.log(">>> check types!!", params, params_templates);
 	const params_names = new Set(Object.keys(params));
 	for (const key in params_templates) {
 		if (!params_names.has(key)) return false;
 		const extends_map = [];
-		if (!params[key].match_Types(params_templates[key], true, undefined, extends_map)) return false;
+		reduced_types[key] = {};
+		if (!params[key].match_Types(params_templates[key], true, undefined, extends_map, reduced_types[key])) return false;
 		params_names.delete(key);
 		type_maps.push({ param: key, extends_map: extends_map });
 	}
@@ -1000,15 +1001,18 @@ export class SDML_Compile_Scope {
 				// check types
 				let match_params = null;
 				let type_maps = [];
+				let reduced_types = {};
 				for (const template_name in target_inputs) {
 					const template = { ...target_inputs[template_name] };
 					for (const template_name of target_entries) {
 						if (!(template_name in template)) template[template_name] = new Types();
 					}
 					const _type_maps = [];
-					const matched = check_Params(children_types, template, _type_maps);
+					const _reduced_types = {};
+					const matched = check_Params(children_types, template, _type_maps, _reduced_types);
 					// console.log(template_name, matched);
 					if (matched) {
+						reduced_types = _reduced_types;
 						match_params = template_name;
 						type_maps = _type_maps;
 						break;
@@ -1040,7 +1044,7 @@ export class SDML_Compile_Scope {
 
 				const child = this.get_NodeInstance(id, name, parent, n);
 				this.registe_Node(id, child);
-				child.receive_Sub(children_types, extends_collection, match_params);
+				child.receive_Sub(children_types, extends_collection, match_params, reduced_types);
 				child.add_ToCollection(collection, param);
 				types.merge_TypesLocal(child.get_Type());
 				// const { types: sub_type, collection: sub_collection } = this.walk(n.children, undefined, n);

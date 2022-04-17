@@ -1,7 +1,7 @@
 import { ALL_INPUTS_TYPES, DepGraph, Types, Collection, ExpTypes, TypesManagerSingleton, BitMask } from '../../SunDesign/Core.js';
 import { parse_Constant, parse_Expression, test_IdentifierName, test_Number } from '../../SunDesign/Core.js';
 import { typeCheck } from '../../SunDesign/sPARks.js';
-import { SDML_Compile_CodeGen, create_Component, SDML_Compile_Error } from '../../SunDesign/Compiler.js';
+import { SDML_Compile_CodeGen, create_Component, SDML_Compile_Error, get_ParamsString } from '../../SunDesign/Compiler.js';
 import { SDML_Compiler_Visitor } from '../../SunDesign/TagVisitor.js';
 import { registe_Tag } from '../../SunDesign/TagCollection.js';
 
@@ -149,7 +149,7 @@ class SDML_THREE_Mesh extends SDML_Compiler_Visitor {
         default: {
             default: new Types({
                 geometry: 1,
-                material: 1,
+                material: Infinity,
             }),
             children: new Types({
                 object3d: Infinity,
@@ -191,10 +191,12 @@ class SDML_THREE_Mesh extends SDML_Compiler_Visitor {
         }
     }
 
-    receive_Sub(types, collection, match_type) {
+    receive_Sub(types, collection, match_type, reduced_types) {
         this.matched = match_type;
         switch (match_type) {
             case 'default': {
+                if (reduced_types.default.material > 1)
+                    throw new SDML_Compile_Error(`when using 'default' inputs for <mesh /> node, materials type can appears only zero or once, but now is:\n<mesh>\n${get_ParamsString(types, true).map(i => `\t${i}`).join("\n")}\n</mesh>`);
                 const mats = collection.get_Class('default', 'material');
                 this.mats = mats;
                 const children = collection.get_Class('children', 'object3d');

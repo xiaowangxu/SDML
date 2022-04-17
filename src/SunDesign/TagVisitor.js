@@ -60,7 +60,7 @@ export class SDML_Compiler_Visitor {
         return `Node_${this.id}`;
     }
 
-    receive_Sub(types, collection, match_type) {
+    receive_Sub(types, collection, match_type, reduced_types) {
 
     }
 

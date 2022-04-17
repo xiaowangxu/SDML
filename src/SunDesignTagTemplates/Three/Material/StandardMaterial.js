@@ -64,7 +64,11 @@ class SDML_THREE_Material extends SDML_Compiler_Visitor {
         super(scope, name, id, parent, ast, TypesManagerSingleton.param('standardmaterial'), ['color', 'emissive', 'roughness', 'metalness', 'flat', 'wireframe']);
     }
 
-    static inputs = Types.NONE;
+    static inputs = {
+        default: {
+            default: new Types()
+        }
+    };
 
     to_Mermaid(ans) {
         ans.push(`Node_${this.uid}(material id=${this.id})`);
