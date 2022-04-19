@@ -632,6 +632,42 @@ export const SunDesignExpressionPrelude = {
 				value: 'int'
 			}, "cast_int"]
 		}],
+		floor: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, "cast_int"]
+		}],
+		ceil: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, "ceil"]
+		}],
+		round: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, "round"]
+		}],
 		"[]": [
 			{
 				inputs: [
@@ -2804,6 +2840,8 @@ const SunDesignExpressionOptimizations = {
 	},
 	FUNCS: {
 		cast_int: (arg1) => Math.floor(arg1.value),
+		ceil: (arg1) => Math.ceil(arg1.value),
+		round: (arg1) => Math.round(arg1.value),
 		valid: (arg1) => (arg1 !== undefined),
 		// vec2
 		addVec2: (arg1, arg2) => {
@@ -3780,6 +3818,8 @@ export const SunDesignCodeGenPassVisitor = {
 		return `(()=>{const a = [];for(let i = 0; i < ${val}; i++) a.push(i);return a;})()`
 	},
 	cast_int: (val) => `Math.floor(${val})`,
+	ceil: (val) => `Math.ceil(${val})`,
+	round: (val) => `Math.round(${val})`,
 	sin: (val) => `Math.sin(${val})`,
 	cos: (val) => `Math.cos(${val})`,
 	tan: (val) => `Math.tan(${val})`,
