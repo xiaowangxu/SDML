@@ -1,9 +1,5 @@
 "use strict"
-
-//import*as THREE from "./lib/three.module.js";
-
 import * as THREE from "../three/src/Three.js";
-
 import { CSG, Vertex, Vector, Polygon } from "./csg-lib.js"
 
 CSG.fromGeometry = function (geom, objectIndex) {
@@ -71,30 +67,15 @@ CSG.fromGeometry = function (geom, objectIndex) {
     return CSG.fromPolygons(polys)
 }
 
-let ttvv0 = new THREE.Vector3()
-let tmpm3 = new THREE.Matrix3();
-CSG.fromMesh = function (mesh, objectIndex) {
-    let csg = CSG.fromGeometry(mesh.geometry, objectIndex)
-    tmpm3.getNormalMatrix(mesh.matrix);
-    for (let i = 0; i < csg.polygons.length; i++) {
-        let p = csg.polygons[i]
-        for (let j = 0; j < p.vertices.length; j++) {
-            let v = p.vertices[j]
-            v.pos.copy(ttvv0.copy(v.pos).applyMatrix4(mesh.matrix));
-            v.normal.copy(ttvv0.copy(v.normal).applyMatrix3(tmpm3))
-        }
-    }
-    return csg;
-}
-
-let nbuf3 = (ct) => {
+function nbuf3(ct) {
     return {
         top: 0,
         array: new Float32Array(ct),
         write: function (v) { (this.array[this.top++] = v.x); (this.array[this.top++] = v.y); (this.array[this.top++] = v.z); }
     }
 }
-let nbuf2 = (ct) => {
+
+function nbuf2(ct) {
     return {
         top: 0,
         array: new Float32Array(ct),
@@ -196,21 +177,6 @@ CSG.toGeometry = function (csg, buffered = true) {
         g2 = geom;
     }
     return geom;
-}
-
-CSG.toMesh = function (csg, toMatrix, toMaterial) {
-    let geom = CSG.toGeometry(csg);
-    let inv = new THREE.Matrix4().copy(toMatrix).invert();
-    geom.applyMatrix4(inv);
-    geom.computeBoundingSphere();
-    geom.computeBoundingBox();
-    let m = new THREE.Mesh(geom, toMaterial);
-    m.matrix.copy(toMatrix);
-    m.matrix.decompose(m.position, m.quaternion, m.scale)
-    m.rotation.setFromQuaternion(m.quaternion)
-    m.updateMatrixWorld();
-    m.castShadow = m.receiveShadow = true;
-    return m
 }
 
 export default CSG

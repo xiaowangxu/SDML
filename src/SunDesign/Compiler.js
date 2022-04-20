@@ -659,8 +659,8 @@ class SDML_Component extends SDML_Node {
 				const name = i.tagName;
 				let cut_type = null;
 				if (name in ALL_NODE_TYPES) {
-					const sub_type = ALL_NODE_TYPES[name].type
-					if (sub_type === Types.NONE) {
+					const sub_type = ALL_NODE_TYPES[name].type ?? ALL_NODE_TYPES[name].get_OutputsTypes(i);
+					if (sub_type === Types.NONE || sub_type === undefined) {
 						throw new Error(`type of node <${name}/> can not but directly resolved in\n<template>\n\t<${name}/>\n</template>\nin ${this.url}\nyou may want to use <type/> entry to define component's type explicitly, so the type check pass will be delayed after compiled the whole component`);
 					}
 					cut_type = sub_type;
@@ -1337,8 +1337,9 @@ export class SDML_Compile_CodeGen {
 	get_Init() {
 		const ans = [];
 		for (const node of this.scope.order) {
+			const nodename = this.get_NodeCache(node);
 			const obj_name = node.get_NewNode(this);
-			const custom_init = node.get_CustomInit(obj_name);
+			const custom_init = node.get_CustomInit(this, nodename);
 			// param init
 			const params = this.params.get(node)
 			for (const param in params) {
@@ -1348,9 +1349,9 @@ export class SDML_Compile_CodeGen {
 			}
 
 			if (custom_init !== null)
-				ans.push(`this.${this.get_NodeCache(node)} = ${custom_init};`)
+				ans.push(`this.${nodename} = ${custom_init};`)
 			else
-				ans.push(`this.${this.get_NodeCache(node)} = new ${obj_name}(${this.get_NodeInputs(node)}, ${this.get_NodeChildren(node)}, ${this.get_NodeSlots(node, true)});`)
+				ans.push(`this.${nodename} = new ${obj_name}(${this.get_NodeInputs(node)}, ${this.get_NodeChildren(node)}, ${this.get_NodeSlots(node, true)});`)
 		}
 		return ans;
 	}

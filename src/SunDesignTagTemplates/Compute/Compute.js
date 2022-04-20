@@ -77,9 +77,9 @@ class SDML_Compute extends SDML_Compiler_Visitor {
     static get_ExportsTypes(ast) {
         const types = SDML_Compute.get_HintType(ast);
         if (types.length === 0)
-            throw new SDML_Compile_Error(`compute node required a type hint like: <compute int exp="..."/>`);
+            throw new SDML_Compile_Error(`compute node required a type hint like: <compute int exp="..." />`);
         if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <compute ${types.join(' ')} exp="..."/>`);
+            throw new SDML_Compile_Error(`multiple type hints appear in node <compute ${types.join(' ')} exp="..." />`);
         return { result: ALL_INPUTS_TYPES[types[0]].datatype() };
     }
 }

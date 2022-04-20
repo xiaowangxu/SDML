@@ -1,7 +1,19 @@
+
+// ## License
+// 
+// Copyright (c) 2011 Evan Wallace (http://madebyevan.com/), under the MIT license.
+// THREE.js rework by thrax
+
+// # class CSG
+// Holds a binary space partition tree representing a 3D solid. Two solids can
+// be combined using the `union()`, `subtract()`, and `intersect()` methods.
+
+
 class CSG {
     constructor() {
         this.polygons = [];
     }
+
     clone() {
         let csg = new CSG();
         csg.polygons = this.polygons.map(p => p.clone())
@@ -66,15 +78,6 @@ CSG.fromPolygons = function (polygons) {
     csg.polygons = polygons;
     return csg;
 }
-
-// # class Vector
-
-// Represents a 3D vector.
-// 
-// Example usage:
-// 
-//     new CSG.Vector(1, 2, 3);
-
 
 
 class Vector {
@@ -151,12 +154,10 @@ class Vector {
 }
 
 //Temporaries used to avoid internal allocation..
-let tv0 = new Vector()
-let tv1 = new Vector()
-
+let tv0 = new Vector();
+let tv1 = new Vector();
 
 // # class Vertex
-
 // Represents a vertex of a polygon. Use your own vertex class instead of this
 // one to provide additional features like texture coordinates and vertex
 // colors. Custom vertex classes need to provide a `pos` property and `clone()`,
@@ -164,7 +165,6 @@ let tv1 = new Vector()
 // defined by `CSG.Vertex`. This class provides `normal` so convenience
 // functions like `CSG.sphere()` can return a smooth vertex normal, but `normal`
 // is not used anywhere else.
-
 class Vertex {
 
     constructor(pos, normal, uv, color) {
@@ -191,11 +191,9 @@ class Vertex {
         return new Vertex(this.pos.clone().lerp(other.pos, t), this.normal.clone().lerp(other.normal, t), this.uv && other.uv && this.uv.clone().lerp(other.uv, t), this.color && other.color && this.color.clone().lerp(other.color, t))
     }
 }
-;
+
 // # class Plane
-
 // Represents a plane in 3D space.
-
 class Plane {
     constructor(normal, w) {
         this.normal = normal;
@@ -277,24 +275,19 @@ class Plane {
 // `Plane.EPSILON` is the tolerance used by `splitPolygon()` to decide if a
 // point is on the plane.
 Plane.EPSILON = 1e-5;
-
 Plane.fromPoints = function (a, b, c) {
-    let n = tv0.copy(b).sub(a).cross(tv1.copy(c).sub(a)).normalize()
+    let n = tv0.copy(b).sub(a).cross(tv1.copy(c).sub(a)).normalize();
     return new Plane(n.clone(), n.dot(a));
 }
 
-
 // # class Polygon
-
 // Represents a convex polygon. The vertices used to initialize a polygon must
 // be coplanar and form a convex loop. They do not have to be `Vertex`
 // instances but they must behave similarly (duck typing can be used for
 // customization).
-// 
 // Each convex polygon has a `shared` property, which is shared between all
 // polygons that are clones of each other or were split from the same polygon.
 // This can be used to define per-polygon properties (such as surface color).
-
 class Polygon {
     constructor(vertices, shared) {
         this.vertices = vertices;
@@ -311,13 +304,11 @@ class Polygon {
 }
 
 // # class Node
-
 // Holds a node in a BSP tree. A BSP tree is built from a collection of polygons
 // by picking a polygon to split along. That polygon (and all other coplanar
 // polygons) are added directly to that node and the other polygons are added to
 // the front and/or back subtrees. This is not a leafy BSP tree since there is
 // no distinction between internal and leaf nodes.
-
 class Node {
     constructor(polygons) {
         this.plane = null;
@@ -416,9 +407,4 @@ class Node {
     }
 }
 
-// Inflate/deserialize a vanilla struct into a CSG structure webworker.
-CSG.fromJSON = function (json) {
-    return CSG.fromPolygons(json.polygons.map(p => new Polygon(p.vertices.map(v => new Vertex(v.pos, v.normal, v.uv)), p.shared)))
-}
-
-export { CSG, Vertex, Vector, Polygon, Plane }
+export { CSG, Vertex, Vector, Polygon, Plane };

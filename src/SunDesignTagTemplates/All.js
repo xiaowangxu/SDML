@@ -7,6 +7,8 @@ import './Number/Add.js';
 import './Compute/Cache.js';
 import './Compute/Collect.js';
 import './Compute/Compute.js';
+import './Compute/ToNode.js';
+import './Compute/ToNodeList.js';
 
 import './Three/PerspectiveCamera.js';
 import './Three/Object3D.js';

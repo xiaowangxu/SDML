@@ -153,7 +153,7 @@ export class SDML_Compiler_Visitor {
         return null;
     }
 
-    get_CustomInit(nodename, type) {
+    get_CustomInit(codegen, nodename) {
         return null;
     }
 
@@ -185,6 +185,10 @@ export class SDML_Compiler_Visitor {
     }
 
     static get_InputsTypes(ast) {
+    }
+
+    static get_OutputsTypes(ast) {
+
     }
 }
 
@@ -892,7 +896,7 @@ class SDML_Slot extends SDML_Compiler_Visitor {
         return `...this.${nodename}.${type}`;
     }
 
-    get_CustomInit(nodename, type) {
+    get_CustomInit(codegen, nodename) {
         return `s.${this.slotname}`;
     }
 
@@ -941,7 +945,7 @@ class SDML_Any extends SDML_Compiler_Visitor {
     get_CustomChildrenParam(nodename, type) {
     }
 
-    get_CustomInit(nodename, type) {
+    get_CustomInit(codegen, nodename) {
     }
 
     get_CustomUpdate(codegen, nodename) {
@@ -1009,7 +1013,7 @@ export class SDML_ComponentNode extends SDML_Compiler_Visitor {
         return this.component.class_name;
     }
 
-    get_CustomInit(nodename, type) {
+    get_CustomInit(codegen, nodename) {
         if (this.component.flags.static) {
             return this.component.class_name;
         }

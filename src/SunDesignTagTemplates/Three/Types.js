@@ -144,7 +144,7 @@ TypesManagerSingleton.extends('geometry', 'spheregeometry', {
     },
     te: {
         datatype: ExpTypes.base(ExpTypes.number),
-        default: 'TAU'
+        default: 'PI'
     },
 });
 TypesManagerSingleton.extends('geometry', 'conegeometry', {

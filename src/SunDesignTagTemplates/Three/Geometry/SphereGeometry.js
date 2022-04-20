@@ -5,7 +5,7 @@ import { SDML_Compile_CodeGen, create_Component } from '../../../SunDesign/Compi
 import { SDML_Compiler_Visitor } from '../../../SunDesign/TagVisitor.js';
 import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
-// BITMASKS = [r	, ws    , hs    , ps    , pe    , ts	, te	, children  ]
+// BITMASKS = [r	, ds    , hs    , ps    , pe    , ts	, te	, children  ]
 // BITMASKS = [1	, 2		, 4 	, 8		, 16    , 32    , 64    ,           ]
 
 export const TAG_THREE_SphereGeometry_0 =
@@ -17,7 +17,7 @@ export const TAG_THREE_SphereGeometry_0 =
         this.init(i, c, s);
     }
     init(i, c, s) {
-        const geo = new THREE.SphereGeometry(i.r, i.ws, i.hs, i.ps, i.pe, i.ts, i.te);
+        const geo = new THREE.SphereGeometry(i.r, i.ds, i.hs, i.ps, i.pe, i.ts, i.te);
         this.r = {
             n: { spheregeometry: [geo] },
             e: {}
@@ -27,7 +27,7 @@ export const TAG_THREE_SphereGeometry_0 =
         const geo = this.r.n.spheregeometry[0];
         if (this.b[0] & 127) {
             geo.dispose();
-            this.r.n.spheregeometry[0] = new THREE.SphereGeometry(i.r, i.ws, i.hs, i.ps, i.pe, i.ts, i.te);
+            this.r.n.spheregeometry[0] = new THREE.SphereGeometry(i.r, i.ds, i.hs, i.ps, i.pe, i.ts, i.te);
             return true;
         }
         return false;
@@ -41,7 +41,7 @@ export const TAG_THREE_SphereGeometry_0 =
 
 class SDML_THREE_SphereGeometry extends SDML_Compiler_Visitor {
     constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('spheregeometry'), ['r', 'ws', 'hs', 'ps', 'pe', 'ts', 'te']);
+        super(scope, name, id, parent, ast, TypesManagerSingleton.param('spheregeometry'), ['r', 'ds', 'hs', 'ps', 'pe', 'ts', 'te']);
     }
 
     static inputs = Types.NONE;

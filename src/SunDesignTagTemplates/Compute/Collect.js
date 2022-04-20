@@ -87,7 +87,7 @@ class SDML_Collect extends SDML_Compiler_Visitor {
         if (types.length === 0)
             throw new SDML_Compile_Error(`collect node required a type hint like: <collect int/>`);
         if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <collect ${types.join(' ')}/>`);
+            throw new SDML_Compile_Error(`multiple type hints appear in node <collect ${types.join(' ')} />`);
         return { result: ExpTypes.array(ALL_INPUTS_TYPES[types[0]].datatype()) };
     }
 
@@ -96,7 +96,7 @@ class SDML_Collect extends SDML_Compiler_Visitor {
         if (types.length === 0)
             throw new SDML_Compile_Error(`collect node required a type hint like: <collect int/>`);
         if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <collect ${types.join(' ')}/>`);
+            throw new SDML_Compile_Error(`multiple type hints appear in node <collect ${types.join(' ')} />`);
         return { default: { default: new Types({ [types[0]]: Infinity }) } };
     }
 }

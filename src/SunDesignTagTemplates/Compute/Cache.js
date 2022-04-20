@@ -87,7 +87,7 @@ class SDML_Cache extends SDML_Compiler_Visitor {
         if (types.length === 0)
             throw new SDML_Compile_Error(`collect node required a type hint like: <cache int/>`);
         if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <cache ${types.join(' ')}/>`);
+            throw new SDML_Compile_Error(`multiple type hints appear in node <cache ${types.join(' ')} />`);
         return { result: ALL_INPUTS_TYPES[types[0]].datatype() };
     }
 
@@ -96,7 +96,7 @@ class SDML_Cache extends SDML_Compiler_Visitor {
         if (types.length === 0)
             throw new SDML_Compile_Error(`collect node required a type hint like: <cache int/>`);
         if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <cache ${types.join(' ')}/>`);
+            throw new SDML_Compile_Error(`multiple type hints appear in node <cache ${types.join(' ')} />`);
         return { default: { default: new Types({ [types[0]]: 1 }) } };
     }
 }

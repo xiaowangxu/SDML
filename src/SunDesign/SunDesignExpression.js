@@ -632,6 +632,18 @@ export const SunDesignExpressionPrelude = {
 				value: 'int'
 			}, "cast_int"]
 		}],
+		str: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'string'
+			}, "cast_string"]
+		}],
 		floor: [{
 			inputs: [{
 				type: 'datatype',
@@ -2839,6 +2851,7 @@ const SunDesignExpressionOptimizations = {
 		"!": (left) => { return !left },
 	},
 	FUNCS: {
+		cast_string: (arg1) => arg1.value.toString(),
 		cast_int: (arg1) => Math.floor(arg1.value),
 		ceil: (arg1) => Math.ceil(arg1.value),
 		round: (arg1) => Math.round(arg1.value),
@@ -3818,6 +3831,7 @@ export const SunDesignCodeGenPassVisitor = {
 		return `(()=>{const a = [];for(let i = 0; i < ${val}; i++) a.push(i);return a;})()`
 	},
 	cast_int: (val) => `Math.floor(${val})`,
+	cast_string: (val) => `(${val}).toString()`,
 	ceil: (val) => `Math.ceil(${val})`,
 	round: (val) => `Math.round(${val})`,
 	sin: (val) => `Math.sin(${val})`,
@@ -3837,7 +3851,7 @@ export const SunDesignCodeGenPassVisitor = {
 	'%': (a, b) => `(${a} % ${b})`,
 	'&&': (a, b) => `(${a} && ${b})`,
 	'||': (a, b) => `(${a} && ${b})`,
-	'!': (a) => `(!${a})`,
+	'_!': (a) => `(!${a})`,
 	'==': (a, b) => `(${a} === ${b})`,
 	'!=': (a, b) => `(${a} !== ${b})`,
 	'>': (a, b) => `(${a} > ${b})`,
