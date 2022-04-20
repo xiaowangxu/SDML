@@ -1,0 +1,69 @@
+<flags />
+<refs>
+    <component id="BaseMat" url="./PolyBlock-Design/BaseMaterial.sdml" />
+</refs>
+<inputs>
+    <float name="time" default="0.0" />
+    <float name="tube_radius" default="0.15" />
+    <float name="tail_length" default="0.8" />
+    <float name="arm_length" default="10.0" />
+    <float name="arm_height" default="3.0" />
+    <float name="lamp_angle" default="0.0" />
+    <bool name="show_lamp" default="true" />
+</inputs>
+<template>
+    <!-- rot="euler(0,time % TAU,0)" -->
+    <scene bg="color(0.15, 0.15, 0.15)">
+        <ambientlight intensity="0.8" />
+        <directionallight pos="vec3(5)" rot="euler(PI / 4, 0, 0)" color="color(1,0,0)" />
+        <directionallight pos="vec3(-5,5,-5)" rot="euler(-PI / 4, 0, 0)" color="color(0,1,1)" />
+        <object3d pos="vec3(-arm_length/2 - 1,0,0)">
+            <mesh pos="vec3(-tail_length/2-(0.15+0.3),0,0)" rot="euler(0,0,PI/2)">
+                <cylindergeometry rt="tube_radius" rb="tube_radius" h="tail_length" rs="16" />
+                <BaseMat />
+            </mesh>
+            <mesh>
+                <lathegeometry rs="32">
+                    <path closed="true">
+                        <curveline s="vec2(0.15, -0.25)" e="vec2(0.25, -0.25)" />
+                        <curveellipse center="vec2(0.25, 0)" rx="0.25" ry="0.25" as="-PI/2" ae="PI/2" />
+                        <curveline s="vec2(0.25, 0.25)" e="vec2(0.15, 0.25)" />
+                    </path>
+                </lathegeometry>
+                <BaseMat />
+            </mesh>
+            <mesh>
+                <extrudegeometry steps="32">
+                    <shape>
+                        <curveellipse rx="tube_radius" ry="tube_radius" />
+                    </shape>
+                    <curvecubicbezier3d s="vec3(0.15+0.3,0,0)" c1="vec3(arm_length* 0.4, 0,0)"
+                        c2="vec3(arm_length, arm_height,0) - vec3(arm_length*(0.4)*cos(lamp_angle), arm_length*(0.4)*sin(lamp_angle),0)"
+                        e="vec3(arm_length, arm_height,0)" />
+                </extrudegeometry>
+                <BaseMat />
+            </mesh>
+            <mesh pos="vec3(arm_length, arm_height,0)" rot="euler(0,0,lamp_angle)">
+                <extrudegeometry>
+                    <shape>
+                        <curveellipse rx="tube_radius-0.03" ry="tube_radius-0.03" />
+                        <holes>
+                            <path>
+                                <curveellipse rx="(tube_radius-0.02)*0.75" ry="(tube_radius-0.03)*0.75" />
+                            </path>
+                        </holes>
+                    </shape>
+                    <curveline3d s="vec3(0,0,0)" e="vec3(0.3, 0,0)" />
+                </extrudegeometry>
+                <BaseMat />
+            </mesh>
+            <object3d pos="vec3(arm_length, arm_height,0)" rot="euler(0, 0, lamp_angle)">
+                <mesh visible="show_lamp" scale="vec3(4)" rot="euler(0, PI/2, 0)">
+                    <stl url="'./PolyBlock-Design/lamp1.stl'" />
+                    <BaseMat />
+                </mesh>
+            </object3d>
+        </object3d>
+    </scene>
+    <perspectivecamera pos="vec3(0,0,30)" rot="euler(0, 0, 0)" fov="45" />
+</template>
