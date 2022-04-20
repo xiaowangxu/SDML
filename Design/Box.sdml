@@ -1,8 +1,9 @@
-<flags static />
+<flags />
 <refs>
 </refs>
 <inputs>
+	<int name="time" default="0" />
 </inputs>
 <template>
-	<to-node int value="123" />
+	<to-node int value="123 + time" />
 </template>

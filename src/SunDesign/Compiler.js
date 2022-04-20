@@ -445,6 +445,7 @@ class SDML_Component extends SDML_Node {
 		this.flags = {
 			static: false,
 			export: false,
+			"inputs-hint": false,
 		};
 		this.sdml = sdml;
 		this.urlmap = {};
@@ -711,7 +712,7 @@ class SDML_Component extends SDML_Node {
 			// })
 			console.log(` ${chalk.bold.redBright('Component Parsing')} ${chalk.bold.green('Ended')} : file '${this.url}' parsing finished`);
 			console.log(` ${chalk.bold.cyanBright('Component CodeGen')} : file '${this.url}' code generating`);
-			const codegen = new SDML_Compile_CodeGen(this.env, class_name, this.compile_res, this.env.opt);
+			const codegen = new SDML_Compile_CodeGen(this.env, class_name, this.compile_res, { ...this.env.opt, inputs_sign: this.flags["inputs-hint"] });
 			const code = codegen.generate();
 			this.env.add_Template(class_name, code);
 			if (this.flags.static) {
@@ -1210,7 +1211,8 @@ export function create_Component(class_name,
 	result,
 	nodes_dispose = [],
 	refs = [],
-	updates = [],) {
+	updates = [],
+	inputs_sign = null) {
 	const bitmasks = [];
 	for (let i = 0; i < bit_masks; i++) {
 		bitmasks.push('0');
@@ -1235,13 +1237,13 @@ export function create_Component(class_name,
 	ref(id) {
 		switch (id) { ${refs.map(([id, cache]) => `\n\t\t\tcase '${id}': return this.${cache};`).join('')}
 		}
-	}
+	}${inputs_sign === null ? '' : `\n	static INPUTS = ${inputs_sign};`}
 }`
 }
 
 export class SDML_Compile_CodeGen {
 	constructor(env, class_name, scope, opt) {
-		this.opt = { for_diff: true, if_branch_cache: false, inline_contanst_exp: false, ...opt };
+		this.opt = { for_diff: true, if_branch_cache: false, inline_contanst_exp: false, inputs_sign: false, ...opt };
 		this.env = env;
 		this.class_name = class_name;
 		this.scope = scope;
@@ -1289,6 +1291,16 @@ export class SDML_Compile_CodeGen {
 			}
 			return arr;
 		}
+	}
+
+	get_InputsSign() {
+		const arr = [];
+		const deps = [...this.scope.scope_deps];
+		const map = this.scope.inputs;
+		for (const param of deps) {
+			arr.push(`${param}: {datatype: '${typeToString(map[param].datatype)}', default: ${map[param].default ?? 'null'}}`);
+		}
+		return `{${arr.join(', ')}}`;
 	}
 
 	get_NodesDeclaration() {
@@ -1657,7 +1669,6 @@ export class SDML_Compile_CodeGen {
 			// console.log(this.get_NodeInputs(node));
 		}
 		this.bitmasks = new BitMask(deps_nodes_arr);
-		// console.log(this.bitmasks);
 		return create_Component(this.class_name,
 			this.get_DefaultInputs(),
 			this.bitmasks.mask_count,
@@ -1668,6 +1679,7 @@ export class SDML_Compile_CodeGen {
 			this.get_Result(),
 			this.get_NodesDispose(),
 			this.get_Refs(),
-			this.get_Update());
+			this.get_Update(),
+			this.opt.inputs_sign ? this.get_InputsSign() : null);
 	}
 }
