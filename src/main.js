@@ -139,7 +139,8 @@ else {
 				console.log(chalk.bgBlueBright.white.bold(`  Mermaid Gening  `));
 				const code = [];
 				for (const url in ENV.caches) {
-					code.push({ url, mermaid: ENV.caches[url].compile_res.to_Mermaid() })
+					if (ENV.caches[url].compile_res)
+						code.push({ url, mermaid: ENV.caches[url].compile_res.to_Mermaid() })
 				}
 				const str = code.map(({ url, mermaid }) => `File: ${url}\n${mermaid}`).join("\n=============================================================================\n");
 				const filepath = opts.mermaid === true ? 'mermaid.txt' : opts.mermaid;
@@ -157,7 +158,7 @@ else {
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				const exports = [...ENV.exports.entries()];
 				if (!opts.test)
-					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\nimport * as UTILS from '${opts.utils}';\n\nconst ${ENV.load_template_name} = [];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}?.dispose()`).join('\n')}\n}\nexport {${exports.map(([name, class_name]) => `${class_name} as ${name}`).join(', ')}};\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\nimport * as UTILS from '${opts.utils}';\n\nconst ${ENV.load_template_name} = [${[...ENV.wait_to_load].join(', ')}];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}`).join('\n')}\n}\nexport {${exports.map(([name, class_name]) => `${class_name} as ${name}`).join(', ')}};\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));

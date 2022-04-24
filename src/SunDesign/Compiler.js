@@ -1,9 +1,12 @@
 import { ALL_INPUTS_TYPES, DepGraph, Types, Collection, ExpTypes, TypesManagerSingleton, BitMask } from './Core.js';
+import { ResourceLoader } from './ResourceLoader.js';
+import { SDML_Node } from './RefNode.js';
 import { SDML_ComponentNode } from './TagVisitor.js';
 import { ALL_NODE_TYPES } from './TagCollection.js';
 import { typeCheck } from './sPARks.js';
 import { typeToString } from './SunDesignExpression.js';
 import { parse_Constant, parse_Expression, test_IdentifierName, test_Number } from './Core.js';
+import Loaders from './Loaders/All.js';
 import '../SunDesignTagTemplates/All.js';
 import { readFile } from 'fs/promises';
 import chalk from 'chalk';
@@ -245,16 +248,6 @@ export class XMLParser {
 	}
 }
 
-export class ResourceLoader {
-	constructor(env) {
-		this.env = env;
-	}
-
-	load(url, ast) {
-		return Promise.resolve(null);
-	}
-}
-
 export class ComponentWebLoader extends ResourceLoader {
 	constructor(env) {
 		super(env);
@@ -304,10 +297,11 @@ export class Environment {
 		this.urlmap = {};
 		this.caches = {};
 		this.promises = [];
-		loaders = { component: ComponentWebLoader, ...loaders };
+		loaders = { component: ComponentWebLoader, ...Loaders, ...loaders };
 		this.loaders = {};
 		this.used_templates = new Map();
 		this.load_template_name = "$loading";
+		this.wait_to_load = new Set();
 		this.wait_to_dispose = new Set();
 		this.exports = new Map();
 		for (let key in loaders) {
@@ -378,6 +372,14 @@ export class Environment {
 		this.exports.set(name, class_name);
 	}
 
+	add_WaitToDispose(str) {
+		this.wait_to_dispose.add(str);
+	}
+
+	add_WaitToLoad(str) {
+		this.wait_to_load.add(str);
+	}
+
 	get uid() {
 		return this.uidgen++;
 	}
@@ -385,46 +387,6 @@ export class Environment {
 	generate() {
 		const codes = [...this.used_templates.values()];
 		return `${SDML_TEMPLATE_BASE}\n${codes.join('\n\n')}`;
-	}
-}
-
-class SDML_Node {
-	constructor(env) {
-		this.type = {
-			node: 1
-		};
-		this.env = env;
-		this.uid = this.env.uid;
-		this.class_name = `component_Component_${this.uid}`;
-		this.inputs = {};
-		this.outputs = {};
-		this.compiled = false;
-	}
-
-	compile() {
-	}
-
-	instance_of(_class) {
-		return this instanceof _class
-	}
-
-	summary() {
-		return `node_${this.uid.toString()}`;
-	}
-
-	get_Entries() {
-		return [];
-	}
-
-	get_InputsTypes() {
-		return Types.NONE;
-	}
-
-	get_ExportsTypes() {
-		return Types.NONE;
-	}
-
-	get_SDMLNodeInstance(scope, name, id, parent, ast) {
 	}
 }
 

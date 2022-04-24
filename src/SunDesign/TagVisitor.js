@@ -1055,7 +1055,7 @@ export class SDML_ComponentNode extends SDML_Compiler_Visitor {
 
     get_CustomDispose(codegen, nodename) {
         if (this.component.flags.static) {
-            codegen.env.wait_to_dispose.add(this.component.class_name);
+            codegen.env.add_WaitToDispose(`${this.component.class_name}.dispose();`);
             return '';
         }
         return null;
