@@ -680,6 +680,68 @@ export const SunDesignExpressionPrelude = {
 				value: 'int'
 			}, "round"]
 		}],
+		min: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, {
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, "min"]
+		}, {
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}, {
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'float'
+			}, "min"]
+		}],
+		max: [{
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, {
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'int'
+			}, "max"]
+		}, {
+			inputs: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}, {
+				type: 'datatype',
+				datatype: 'base',
+				value: '$number'
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'base',
+				value: 'float'
+			}, "max"]
+		}],
 		"[]": [
 			{
 				inputs: [
@@ -2873,6 +2935,8 @@ const SunDesignExpressionOptimizations = {
 		cast_int: (arg1) => Math.floor(arg1.value),
 		ceil: (arg1) => Math.ceil(arg1.value),
 		round: (arg1) => Math.round(arg1.value),
+		min: (arg1, arg2) => Math.min(arg1.value, arg2.value),
+		max: (arg1) => Math.max(arg1.value, arg2.value),
 		valid: (arg1) => (arg1 !== undefined),
 		// vec2
 		addVec2: (arg1, arg2) => {
@@ -3856,6 +3920,8 @@ export const SunDesignCodeGenPassVisitor = {
 	cast_string: (val) => `(${val}).toString()`,
 	ceil: (val) => `Math.ceil(${val})`,
 	round: (val) => `Math.round(${val})`,
+	min: (val) => `Math.min(${val[0]}, ${val[1]})`,
+	max: (val) => `Math.max(${val[0]}, ${val[1]})`,
 	sin: (val) => `Math.sin(${val})`,
 	cos: (val) => `Math.cos(${val})`,
 	tan: (val) => `Math.tan(${val})`,
@@ -3925,45 +3991,45 @@ export const SunDesignCodeGenPassVisitor = {
 	},
 	// vec2
 	multScalerVec2: (val, opt, codegen) => {
-		return `${val[0]}.multiplyScalar(${val[1]})`
+		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).multiplyScalar(${val[1]}))`
 	},
 	multScalerVec2_0: (val, opt, codegen) => {
-		return `${val[1]}.multiplyScalar(${val[0]})`
+		return `(new ${opt.THREE}.Vector2().copy(${val[1]}).multiplyScalar(${val[0]}))`
 	},
 	addVec2: (val, opt, codegen) => {
-		return `${val[0]}.add(${val[1]})`
+		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).add(${val[1]}))`
 	},
 	minusVec2: (val, opt, codegen) => {
-		return `${val[0]}.sub(${val[1]})`
+		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).sub(${val[1]}))`
 	},
 	dotVec2Vec2: (val, opt, codegen) => {
 		return `${val[0]}.dot(${val[1]})`
 	},
 	multVec2Vec2: (val, opt, codegen) => {
-		return `${val[0]}.cross(${val[1]})`
+		return `(new ${opt.THREE}.Vector2().crossVectors(${val[0]}, ${val[1]}))`
 	},
 	// vec3
 	multScalerVec3: (val, opt, codegen) => {
-		return `${val[0]}.multiplyScalar(${val[1]})`
+		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).multiplyScalar(${val[1]}))`
 	},
 	multScalerVec3_0: (val, opt, codegen) => {
-		return `${val[1]}.multiplyScalar(${val[0]})`
+		return `(new ${opt.THREE}.Vector3().copy(${val[1]}).multiplyScalar(${val[0]}))`
 	},
 	addVec3: (val, opt, codegen) => {
-		return `${val[0]}.add(${val[1]})`
+		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).add(${val[1]}))`
 	},
 	minusVec3: (val, opt, codegen) => {
-		return `${val[0]}.sub(${val[1]})`
+		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).sub(${val[1]}))`
 	},
 	dotVec3Vec3: (val, opt, codegen) => {
 		return `${val[0]}.dot(${val[1]})`
 	},
 	multVec3Vec3: (val, opt, codegen) => {
-		return `${val[0]}.cross(${val[1]})`
+		return `(new ${opt.THREE}.Vector3().crossVectors(${val[0]}, ${val[1]}))`
 	},
 	// quat
 	multQuatQuat: (val, opt, codegen) => {
-		return `${val[0]}.multiply(${val[1]})`
+		return `(new ${opt.THREE}.Quaternion().copy(${val[0]}).multiply(${val[1]}))`
 	},
 	makeQuatRotateTo: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Quaternion().setFromUnitVectors(${val[0]}, ${val[1]}))`
@@ -4025,7 +4091,7 @@ export const SunDesignCodeGenPassVisitor = {
 		return `${val[0]}.y`
 	},
 	getVec2Normal: (val, opt, codegen) => {
-		return `${val[0]}.normalize()`
+		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).normalize())`
 	},
 	getVec2Length: (val, opt, codegen) => {
 		return `${val[0]}.length()`
@@ -4041,7 +4107,7 @@ export const SunDesignCodeGenPassVisitor = {
 		return `${val[0]}.z`
 	},
 	getVec3Normal: (val, opt, codegen) => {
-		return `${val[0]}.normalize()`
+		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).normalize())`
 	},
 	getVec3Length: (val, opt, codegen) => {
 		return `${val[0]}.length()`
