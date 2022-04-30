@@ -10,7 +10,7 @@ import { typeToString } from './SunDesign/sPARks.js';
 
 const program = new Command();
 
-const VERSION = '0.0.1';
+const VERSION = '1.0.0';
 
 const TITLE = `    _____ _____  __  __ _      _____                      _ _           
   / ____|| ___ \\|  \\/  | |    / ____|                    (_) |          
@@ -158,7 +158,7 @@ else {
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				const exports = [...ENV.exports.entries()];
 				if (!opts.test)
-					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\nimport * as UTILS from '${opts.utils}';\n\nconst ${ENV.load_template_name} = [${[...ENV.wait_to_load].join(', ')}];\n\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}`).join('\n')}\n}\nexport {${exports.map(([name, class_name]) => `${class_name} as ${name}`).join(', ')}};\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
+					return writeFile(opts.o, `import * as THREE from '${opts.three}';\nimport CSG from '${opts.csg}';\nimport * as UTILS from '${opts.utils}';\n\nconst ${ENV.load_template_name} = [${[...ENV.wait_to_load].join(', ')}];\n${code}\n\nconst $load_promise = Promise.all(${ENV.load_template_name});\nfunction $dispose() {\n${[...ENV.wait_to_dispose].map(i => `\t${i}`).join('\n')}\n}\nexport {${exports.map(([name, class_name]) => `${class_name} as ${name}`).join(', ')}};\nexport { ${entry} as ${opts.e}, $load_promise as onLoad, $dispose as Dispose };`).then(() => {
 					}).catch(err => {
 						console.log(chalk.red.bold(`Failed to write file '${opts.o}'\nmore info:`));
 						console.log(chalk.red(`  ${err.message}`));
@@ -170,6 +170,7 @@ else {
 			console.log(` in ${Time()}\n`);
 			process.exit(0);
 		}).catch(err => {
+			// console.log(err)
 			console.log(chalk.bgRedBright.white.bold(`  Error Occoured  `));
 			console.log(chalk.redBright.bold(`Failed to compile file '${opts.f}'\nmore info:`));
 			console.log(err.message);

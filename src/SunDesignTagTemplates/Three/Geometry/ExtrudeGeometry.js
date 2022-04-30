@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_ExtrudeGeometry_0 =
 {
-    name: 'component_THREE_ExtrudeGeometry', code: `class component_THREE_ExtrudeGeometry extends ComponentBase {
+	name: 'component_THREE_ExtrudeGeometry', code: `class component_THREE_ExtrudeGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -62,71 +62,71 @@ export const TAG_THREE_ExtrudeGeometry_0 =
 }`}
 
 class SDML_THREE_ExtrudeGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('extrudegeometry'), ['curvesegments', 'steps', 'depth', 'bevelthickness', 'bevelsize', 'beveloffset', 'bevelsegments']);
-        this.matched = null;
-        this.shape = null;
-        this.curve = null;
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('extrudegeometry'), ['curvesegments', 'steps', 'depth', 'bevelthickness', 'bevelsize', 'beveloffset', 'bevelsegments']);
+		this.matched = null;
+		this.shape = null;
+		this.curve = null;
+	}
 
-    static entries = [];
-    static inputs = {
-        default: {
-            default: new Types({
-                shape: 1,
-                curve3d: 1,
-            })
-        },
-    };
-    static exports = {};
+	static entries = [];
+	static inputs = {
+		default: {
+			default: new Types({
+				shape: 1,
+				curve3d: 1,
+			})
+		},
+	};
+	static exports = {};
 
-    to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(extrude-geometry id=${this.id} match=${this.matched})`);
-        if (this.matched === 'default') {
-            link.push(`Node_${this.shape.uid} -->|shape| Node_${this.uid}`);
-            link.push(`Node_${this.curve.uid} -->|curve| Node_${this.uid}`);
-        }
-    }
+	to_Mermaid(ans, link) {
+		ans.push(`Node_${this.uid}(extrude-geometry id=${this.id} match=${this.matched})`);
+		if (this.matched === 'default') {
+			link.push(`Node_${this.shape.uid} -->|shape| Node_${this.uid}`);
+			link.push(`Node_${this.curve.uid} -->|curve| Node_${this.uid}`);
+		}
+	}
 
-    receive_Sub(types, collection, match_type) {
-        this.matched = match_type;
-        switch (match_type) {
-            case 'default': {
-                const shape = collection.get_Class('default', 'shape');
-                this.shape = shape[0];
-                const curve = collection.get_Class('default', 'curve3d');
-                this.curve = curve[0];
-                this.scope.graph.add_Edge(this.shape, this);
-                this.scope.graph.add_Edge(this.curve, this);
-                break;
-            }
-        }
-    }
+	receive_Sub(types, collection, match_type) {
+		this.matched = match_type;
+		switch (match_type) {
+			case 'default': {
+				const shape = collection.get_Class('default', 'shape');
+				this.shape = shape[0];
+				const curve = collection.get_Class('default', 'curve3d');
+				this.curve = curve[0];
+				this.scope.graph.add_Edge(this.shape, this);
+				this.scope.graph.add_Edge(this.curve, this);
+				break;
+			}
+		}
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'extrudegeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'extrudegeometry', this);
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_ExtrudeGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_ExtrudeGeometry_0);
+	}
 
-    get_NodeChildren(codegen) {
-        switch (this.matched) {
-            case 'default': {
-                const ans = { default: { shape: [...this.shape.get_TypeMapped('shape')], curve3d: [...this.curve.get_TypeMapped('curve3d')] } };
-                return ans;
-            }
-        }
-    }
+	get_NodeChildren(codegen) {
+		switch (this.matched) {
+			case 'default': {
+				const ans = { default: { shape: [...this.shape.get_TypeMapped('shape')], curve3d: [...this.curve.get_TypeMapped('curve3d')] } };
+				return ans;
+			}
+		}
+	}
 
-    get_Type() {
-        return SDML_THREE_ExtrudeGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_ExtrudeGeometry.type;
+	}
 
-    static get type() {
-        return new Types({ extrudegeometry: 1 });
-    }
+	static get type() {
+		return new Types({ extrudegeometry: 1 });
+	}
 }
 
 registe_Tag('extrudegeometry', SDML_THREE_ExtrudeGeometry);

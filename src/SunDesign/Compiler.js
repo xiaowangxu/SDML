@@ -461,8 +461,8 @@ class SDML_Component extends SDML_Node {
 			if (ref.attributes.url === undefined || ref.attributes.url === '') throw new Error("an SDML Component's sub Resource should always contain url attribute: <resource-type url=\"...\" />");
 			if (ref.attributes.id === undefined || ref.attributes.id === '') throw new Error("an SDML Component's sub Resource should always contain id attribute: <resource-type id=\"...\" />");
 			const id = ref.attributes.id;
-			if (id in ALL_NODE_TYPES) throw new Error(`reserved SDML Component's sub Resource id '${id}' found in\n<refs>\n\t<${ref.tagName} id="${id}" />\n</refs>\nin ${this.url}`);
-			if (id in this.urlmap) throw new Error(`duplicate SDML Component's sub Resource id '${id}' found in\n<refs>\n\t<${ref.tagName} id="${id}" />\n</refs>\nin ${this.url}`);
+			if (id in ALL_NODE_TYPES) throw new Error(`reserved SDML Component's sub Resource id '${id}' found in\n<refs>\n\t<${ref.tagName} id="${id}" />\n</refs>`);
+			if (id in this.urlmap) throw new Error(`duplicate SDML Component's sub Resource id '${id}' found in\n<refs>\n\t<${ref.tagName} id="${id}" />\n</refs>`);
 			const url = ref.attributes.url;
 			this.urlmap[id] = url;
 			promises.push(this.env.load(ref.tagName, url, ref))
@@ -678,7 +678,8 @@ class SDML_Component extends SDML_Node {
 			const code = codegen.generate();
 			this.env.add_Template(class_name, code);
 			if (this.flags.static) {
-				this.env.add_Template(this.class_name, `const ${this.class_name} = new ${class_name}();`);
+				this.env.add_Template(this.class_name, `var ${this.class_name} = null;`);
+				this.env.add_Template(`${this.class_name}_load`, `${this.env.load_template_name}.push(new Promise((s, r)=>{Promise.all([...${this.env.load_template_name}]).then(()=>{${this.class_name} = new ${class_name}(); s();})}));`);
 			}
 			if (!(this.flags.export === false)) {
 				if (!test_IdentifierName(this.flags.export)) {
@@ -801,7 +802,7 @@ export class SDML_Compile_Scope {
 		this.uid = env.uid;
 		this.urlmap = urlmap;
 		this.nodemap = {};
-		this.template = template;
+		this.template = template.map((i, idx) => { return { ...i, key: idx } });
 		this.opt = opt;
 		this.inputs = inputs ?? {};
 		this.outputs = outputs ?? {};
@@ -875,7 +876,7 @@ export class SDML_Compile_Scope {
 		}
 	}
 
-	get_NodeInstance(id, tagName, parent = null, ast) {
+	get_NodeInstance(id, tagName, parent = null, ast, key) {
 		if (tagName in ALL_NODE_TYPES) {
 			return new ALL_NODE_TYPES[tagName](this, tagName, id, parent, ast);
 		}
@@ -895,6 +896,7 @@ export class SDML_Compile_Scope {
 		const collection = new Collection();
 		for (const n of nodes) {
 			const name = n.tagName;
+			const key = n.key ?? 0;
 			const { id = `$node_${this.env.uid}` } = n.attributes;
 			// check valid
 			if (!this.check_Valid(name)) {
@@ -912,6 +914,7 @@ export class SDML_Compile_Scope {
 				}
 				else {
 					const child = this.get_NodeInstance(id, name, parent, n);
+					child.$$key = key;
 					this.registe_Node(id, child);
 					child.add_ToCollection(collection, param);
 					types.merge_TypesLocal(child.get_Type());
@@ -950,6 +953,12 @@ export class SDML_Compile_Scope {
 						set_params('default', [child]);
 					}
 				}
+
+				// keyed
+				for (const param in params) {
+					params[param] = params[param].map((i, idx) => { return { ...i, key: idx } });
+				}
+
 				const children_collection = new Collection();
 				const children_types = {};
 				for (const key in params) {
@@ -996,16 +1005,20 @@ export class SDML_Compile_Scope {
 					const param_collection = children_collection.get(param);
 					// console.log(param, extends_map, param_collection);
 					for (const { target, subtypes } of extends_map) {
+						const ans = new Set();
 						for (const sub_type of subtypes) {
 							param_collection[sub_type].forEach(n => {
 								n.types_maps[sub_type] = target;
-								extends_collection.add(param, target, n)
+								ans.add(n);
 							})
 						}
+						const sorted = [...ans].sort((a, b) => a.$$key - b.$$key);
+						extends_collection.set(param, target, sorted);
 					}
 				}
 
 				const child = this.get_NodeInstance(id, name, parent, n);
+				child.$$key = key;
 				this.registe_Node(id, child);
 				child.receive_Sub(children_types, extends_collection, match_params, reduced_types);
 				child.add_ToCollection(collection, param);
@@ -1297,7 +1310,12 @@ export class SDML_Compile_CodeGen {
 		}
 		// ans.push(`this.b = [${bitmasks.join(', ')}];`);
 		for (const dep of this.scope.scope_deps) {
-			ans.push(`if (i.${dep} !== undefined && i.${dep} !== this.i.${dep}) {`);
+			const datatype = this.scope.inputs[dep].datatype;
+			let diff = `i.${dep} !== this.i.${dep}`;
+			if (datatype.datatype === 'base') {
+				diff = ALL_INPUTS_TYPES?.[datatype.value]?.diff?.(dep) ?? diff;
+			}
+			ans.push(`if (i.${dep} !== undefined && ${diff}) {`);
 			const arr = this.bitmasks.get_Masks([dep]);
 			for (const [idx, mask] of arr) {
 				ans.push(`	this.i.${dep} = i.${dep};`);

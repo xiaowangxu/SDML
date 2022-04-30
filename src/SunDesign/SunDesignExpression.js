@@ -1935,6 +1935,24 @@ export const SunDesignExpressionPrelude = {
 				}, "makeQuat"]
 			}
 		],
+		"rotateTo": [
+			{
+				inputs: [{
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}],
+				export: [{
+					type: "datatype",
+					datatype: "base",
+					value: "quat"
+				}, "makeQuatRotateTo"]
+			}
+		],
 		"mat4": [
 			{
 				inputs: [],
@@ -2886,6 +2904,10 @@ const SunDesignExpressionOptimizations = {
 		// quat
 		multQuatQuat: (quat1, quat2) => {
 			return OptQuaternion.multiply(quat1.value, quat2.value)
+		},
+		makeQuatRotateTo: (vec1, vec2) => {
+			const quat = new THREE.Quaternion().setFromUnitVectors(vec1.value.toTHREEVector3(), vec2.value.toTHREEVector3())
+			return OptQuaternion.toOptQuaternion(quat)
 		},
 
 		// mat4
@@ -3942,6 +3964,9 @@ export const SunDesignCodeGenPassVisitor = {
 	// quat
 	multQuatQuat: (val, opt, codegen) => {
 		return `${val[0]}.multiply(${val[1]})`
+	},
+	makeQuatRotateTo: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Quaternion().setFromUnitVectors(${val[0]}, ${val[1]}))`
 	},
 	// color
 	makeColorRGB: (val, opt, codegen) => {
