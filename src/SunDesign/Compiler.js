@@ -922,6 +922,7 @@ export class SDML_Compile_Scope {
 			}
 			else if (target_inputs === Types.IGNORE) {
 				const child = this.get_NodeInstance(id, name, parent, n);
+				child.$$key = key;
 				this.registe_Node(id, child);
 				child.add_ToCollection(collection, param);
 				types.merge_TypesLocal(child.get_Type());
@@ -1393,6 +1394,7 @@ export class SDML_Compile_CodeGen {
 		// debugger
 		const children_template = node.get_NodeChildren(this);
 		const arr = [];
+		// console.log(node.name, children_template.default)
 		for (const param in children_template) {
 			const params = children_template[param];
 			const types_arr = [];

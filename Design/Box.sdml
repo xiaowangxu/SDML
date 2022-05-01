@@ -5,5 +5,13 @@
 	<int name="time" default="0" />
 </inputs>
 <template>
-	<to-node int value="123 + time" />
+	<path>
+		<curveline />
+		<curveellipse />
+		<curveline />
+		<for array="range(2)" index="i">
+			<curveline />
+			<curveellipse />
+		</for>
+	</path>
 </template>

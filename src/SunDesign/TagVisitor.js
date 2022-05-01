@@ -719,7 +719,7 @@ class SDML_For extends SDML_Compiler_Visitor {
 	}
 
 	generate(parent_codegen) {
-		// console.log(this.for_loop);
+		console.log(this.types_maps);
 		const { for_diff = true } = parent_codegen.opt;
 		const codegen = new SDML_Compile_CodeGen(parent_codegen.env, `closure_For_${this.uid}`, this.for_loop, parent_codegen.opt);
 		const code = codegen.generate();

@@ -574,6 +574,28 @@ export const SunDesignExpressionPrelude = {
 					value: 'int'
 				}
 			}, "range"]
+		},
+		{
+			inputs: [{
+				type: "datatype",
+				datatype: "base",
+				value: "int"
+			},
+			{
+				type: "datatype",
+				datatype: "base",
+				value: "int"
+			}],
+			export: [{
+				type: 'datatype',
+				datatype: 'arraytype',
+				count: null,
+				value: {
+					type: 'datatype',
+					datatype: 'base',
+					value: 'int'
+				}
+			}, "range_from_to"]
 		}],
 		switch: [
 			{
@@ -3915,6 +3937,9 @@ export const SunDesignExpressionOptimizationPass = new OptimizationPass()
 export const SunDesignCodeGenPassVisitor = {
 	range: (val) => {
 		return `(()=>{const a = [];for(let i = 0; i < ${val}; i++) a.push(i);return a;})()`
+	},
+	range_from_to: (val) => {
+		return `(()=>{const a = [];if(${val[0]}<${val[1]})for(let i = ${val[0]}; i < ${val[1]}; i++) a.push(i);else for(let i = ${val[1]}; i > ${val[1]}; i--) a.push(i);return a;})()`
 	},
 	cast_int: (val) => `Math.floor(${val})`,
 	cast_string: (val) => `(${val}).toString()`,
