@@ -294,6 +294,7 @@ export class Environment {
 	constructor(loaders = {}, opt = {}) {
 		this.opt = opt;
 		this.uidgen = BigInt(0);
+		this.warnings = [];
 		this.urlmap = {};
 		this.caches = {};
 		this.promises = [];
@@ -408,6 +409,7 @@ class SDML_Component extends SDML_Node {
 			static: false,
 			export: false,
 			"inputs-hint": false,
+			strict: false,
 		};
 		this.sdml = sdml;
 		this.urlmap = {};
@@ -668,6 +670,29 @@ class SDML_Component extends SDML_Node {
 				throw new Error(`types do not match:\nthe desired types are:\n${this.types.to_List().map(i => `* ${i}`).join("\n")}\nbut the compiled results are:\n${this.compile_res.types.to_List().map(i => `* ${i}`).join("\n")}`);
 			}
 			this.types = this.compile_res.types;
+			{
+				const all_types = this.types.type_names;
+				const type_maps = [];
+				for (let i = 0; i < all_types.length - 1; i++) {
+					for (let j = i + 1; j < all_types.length; j++) {
+						const it = all_types[i];
+						const jt = all_types[j];
+						if (TypesManagerSingleton.instance_of(it, jt))
+							type_maps.push(`${it} -> ${jt}`);
+						else if (TypesManagerSingleton.instance_of(jt, it))
+							type_maps.push(`${jt} -> ${it}`);
+					}
+				}
+				if (type_maps.length > 0) {
+					const err = new Error(`the types of the component '${this.url}' are:\n${this.types.to_List().map(i => `	${i}`).join('\n')}\nwhich can be map to some same types:\n${type_maps.map(i => `	${i}`).join('\n')}\nthis may cause ordering issues when using the component, because the sdmlc can not help you auto-cast/reorder the nodes in a component defination\nmore hint:\n	1. you should always use the component to output a single result or at least only one result of one specific type\n	2. if you know what you are doing, you may ignore this warning`);
+					if (this.flags.strict) {
+						throw err;
+					}
+					else
+						this.env.warnings.push(err);
+				}
+
+			}
 			// const mermaid = this.compile_res.to_Mermaid();
 			// render_Graph(mermaid).then(svg => {
 			//     console.log(`Graph Preview: ${this.url}\n\t%c %c`, `border: black 1px solid; background: url("data:image/svg+xml;base64,${btoa(svg)}") no-repeat center; padding: 180px 280px; background-size: contain;`, "");
@@ -1002,14 +1027,16 @@ export class SDML_Compile_Scope {
 				}
 
 				const extends_collection = new Collection();
+				const all_children = new Set();
 				for (const { param, extends_map } of type_maps) {
 					const param_collection = children_collection.get(param);
-					// console.log(param, extends_map, param_collection);
+					// console.log(param, extends_map);
 					for (const { target, subtypes } of extends_map) {
 						const ans = new Set();
 						for (const sub_type of subtypes) {
 							param_collection[sub_type].forEach(n => {
 								n.types_maps[sub_type] = target;
+								all_children.add(n);
 								ans.add(n);
 							})
 						}
@@ -1018,24 +1045,18 @@ export class SDML_Compile_Scope {
 					}
 				}
 
+				all_children.forEach(n => {
+					n.after_TypeMapped();
+				})
+
+				// console.log(extends_collection.collection?.default.curve)
+
 				const child = this.get_NodeInstance(id, name, parent, n);
 				child.$$key = key;
 				this.registe_Node(id, child);
 				child.receive_Sub(children_types, extends_collection, match_params, reduced_types);
 				child.add_ToCollection(collection, param);
 				types.merge_TypesLocal(child.get_Type());
-				// const { types: sub_type, collection: sub_collection } = this.walk(n.children, undefined, n);
-				// const [ans, match_type] = sub_type.check_Types(target_inputs);
-				// if (!ans) {
-				// 	throw new SDML_Compile_Error(`type check fail in <${name}/>\ncurrent sub types:\n<${name}>\n${sub_type.to_List().map(i => `\t${i}`).join("\n")}\n<${name}/>\nexpect sub types:`)
-				// }
-				// else {
-				// 	const child = this.get_NodeInstance(id, name, parent, n);
-				// 	this.registe_Node(id, child);
-				// 	child.receive_Sub(sub_type, sub_collection, match_type);
-				// 	child.add_ToCollection(collection, param);
-				// 	types.merge_TypesLocal(child.get_Type());
-				// }
 			}
 		}
 		return { types, collection };
@@ -1117,6 +1138,42 @@ export class SDML_Compile_Scope {
 			console.log(err);
 		}
 		return { types, collection };
+	}
+
+	reduce_CollectionAndTypes(map) {
+		const collection = new Collection();
+		const param = 'default';
+		const _collection = this.collection.get(param);
+		const types = Object.keys(_collection);
+		const obj = {};
+		for (const type of types) {
+			obj[map[type] ?? type] = new Set();
+		}
+		for (const type of types) {
+			if (map[type] === undefined) {
+				obj[type] = _collection[type];
+			}
+			else {
+				const _type = map[type];
+				_collection[type].forEach(n => {
+					obj[_type].add(n);
+				})
+			}
+		}
+		for (const type in obj) {
+			const sorted = [...obj[type]].sort((a, b) => a.$$key - b.$$key);
+			collection.set(param, type, sorted);
+		}
+		const type = {};
+		const type_names = this.types.type_names;
+		for (const t of type_names) {
+			type[map[t] ?? t] = 0
+		}
+		for (const t of type_names) {
+			if (map[t] === undefined) type[t] += this.types.get_Count(t);
+			else type[map[t]] += this.types.get_Count(t);
+		}
+		return [collection, new Types(type)]
 	}
 
 	to_Mermaid() {
@@ -1219,7 +1276,7 @@ export function create_Component(class_name,
 
 export class SDML_Compile_CodeGen {
 	constructor(env, class_name, scope, opt) {
-		this.opt = { for_diff: true, if_branch_cache: false, inline_contanst_exp: false, inputs_sign: false, ...opt };
+		this.opt = { for_diff: true, if_branch_cache: false, inline_contanst_exp: false, inputs_sign: false, types_maps: null, reduced_collection: null, ...opt };
 		this.env = env;
 		this.class_name = class_name;
 		this.scope = scope;
@@ -1349,17 +1406,46 @@ export class SDML_Compile_CodeGen {
 		return ans;
 	}
 
+	get_ReducedType(node, target_type, origin_collection, types_maps) {
+		if (node.auto_reduced) return target_type;
+		const could_contain = [];
+		for (const key in types_maps) {
+			if (types_maps[key] === target_type) could_contain.push(key);
+		}
+		const type_set = new Set();
+		for (const t of could_contain) {
+			if (origin_collection?.[t]?.has(node) ?? false) {
+				type_set.add(t);
+			}
+		}
+		if (type_set.size === 0) {
+			return null;
+		}
+		if (type_set.size > 1) {
+			throw new Error(`multiple reduce source types appeared when try to reduce <${node.name} id="${node.id}" /> to parent type '${target_type}'\nthis node provides:\n${[...type_set].map(i => `	${i}`).join('\n')}\nwhich can not be easily reduced to a single type '${target_type}', because it may cause ordering issues`);
+		}
+		return [...type_set][0];
+	}
+
 	get_TypedResult(children, type) {
 		const nodes_arr = [];
 		for (const node of children[type]) {
 			const node_name = this.get_NodeCache(node);
-			nodes_arr.push(`...this.${node_name}.r.n.${type}`);
+			if (this.opt.types_maps === null)
+				nodes_arr.push(`...this.${node_name}.r.n.${type}`);
+			else {
+				const new_type = this.get_ReducedType(node, type, this.scope.collection.get('default'), this.opt.types_maps);
+				if (new_type !== null)
+					nodes_arr.push(`...this.${node_name}.r.n.${new_type}`);
+				else
+					nodes_arr.push(`...this.${node_name}.r.n.${type}`);
+			}
 		}
 		return nodes_arr;
 	}
 
 	get_Result() {
-		const collection = this.scope.collection.get('default');
+		const collection = (this.opt.reduced_collection ?? this.scope.collection).get('default');
 		const arr = [];
 		for (const type in collection) {
 			const nodes_arr = this.get_TypedResult(collection, type);
@@ -1565,7 +1651,7 @@ export class SDML_Compile_CodeGen {
 		}
 		// update nodes
 		// console.log(this.scope.collection);
-		const slots = this.scope.collection.get('default');
+		const slots = (this.opt.reduced_collection ?? this.scope.collection).get('default');
 		for (const type_name in slots) {
 			const nodes = [...slots[type_name]];
 			const masked_nodes = nodes.map(i => this.get_MaskedName(this.get_NodeCache(i)));

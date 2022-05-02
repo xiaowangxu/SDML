@@ -64,7 +64,7 @@ if (opts.m !== false) {
 	console.log(chalk.italic.bold(MANUAL) + `version:${VERSION}`);
 	console.log('');
 	if (opts.m === 'listall') {
-		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.white.bold("ALL NODES") + chalk.bgMagenta(" ") + '\n');
+		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.rgb(255, 255, 255).bold("ALL NODES") + chalk.bgMagenta(" ") + '\n');
 		const names = Object.keys(ALL_NODE_TYPES);
 		names.sort();
 		for (const name of names) {
@@ -78,18 +78,18 @@ if (opts.m !== false) {
 		const node = ALL_NODE_TYPES[nodename];
 		const params = TypesManagerSingleton.param(nodename);
 
-		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.white.bold("SIGNATURE") + chalk.bgMagenta(" ") + '\n');
+		console.log(chalk.bgMagenta(" ") + chalk.bgMagenta.rgb(255, 255, 255).bold("SIGNATURE") + chalk.bgMagenta(" ") + '\n');
 		console.log(`  ${chalk.bold('<')}${chalk.redBright.bold(nodename)} ${params === undefined ? '' : Object.entries(params).map(([key, value]) => {
 			if (value.default !== undefined) return `[${chalk.blueBright.bold.italic(key)}]:${chalk.cyan.bold(typeToString(value.datatype))}=${chalk.greenBright.bold(`"${value.default}"`)}`;
 			return `${chalk.blueBright.bold.italic(key)}:${chalk.cyan.bold(typeToString(value.datatype))}`;
 		}).join(" ")}${chalk.bold(' />')}`);
 
-		console.log('  \\\n    ' + chalk.bgCyan(" ") + chalk.bgCyan.white.bold("OUTPUT") + chalk.bgCyan(" ") + '\n');
+		console.log('  \\\n    ' + chalk.bgCyan(" ") + chalk.bgCyan.rgb(255, 255, 255).bold("OUTPUT") + chalk.bgCyan(" ") + '\n');
 		console.log(`${node.type === null ? '    not determined' : node.type.to_List().map(i => `    ${i}`).join('\n')}`);
 		console.log('');
 
 
-		console.log(chalk.bgBlue(" ") + chalk.bgBlue.white.bold("INPUTS") + chalk.bgBlue(" ") + '\n');
+		console.log(chalk.bgBlue(" ") + chalk.bgBlue.rgb(255, 255, 255).bold("INPUTS") + chalk.bgBlue(" ") + '\n');
 		if (node.inputs === null) {
 			console.log('  (no sub nodes)', '\n');
 		}
@@ -120,11 +120,11 @@ else {
 	console.log('');
 
 	try {
-		console.log(chalk.bgBlueBright.whiteBright.bold(`  SDML Compiling  `) + '');
+		console.log(chalk.bgBlueBright.rgb(255, 255, 255).bold(`  SDML Compiling  `) + '');
 		ENV.component(opts.e, opts.f);
 		Promise.all(ENV.promises).then(() => {
 			if (opts.flowchart) {
-				console.log(chalk.bgBlueBright.white.bold(` FlowChart Gening `));
+				console.log(chalk.bgBlueBright.rgb(255, 255, 255).bold(` FlowChart Gening `));
 				const mermaid_str = ENV.caches[opts.f].compile_res.to_Mermaid();
 				const str = mermaid_str;
 				const filepath = opts.flowchart === true ? 'flowchart.mmd' : opts.flowchart;
@@ -136,7 +136,7 @@ else {
 				})
 			}
 			else if (opts.mermaid) {
-				console.log(chalk.bgBlueBright.white.bold(`  Mermaid Gening  `));
+				console.log(chalk.bgBlueBright.rgb(255, 255, 255).bold(`  Mermaid Gening  `));
 				const code = [];
 				for (const url in ENV.caches) {
 					if (ENV.caches[url].compile_res)
@@ -152,8 +152,15 @@ else {
 				})
 			}
 			else {
-				console.log(chalk.bgBlueBright.white.bold(` Code  Generating `));
+				console.log(chalk.bgBlueBright.rgb(255, 255, 255).bold(` Code  Generating `));
 				const code = ENV.generate();
+				if (ENV.warnings.length > 0) {
+					console.log(chalk.bgRgb(255, 123, 0).rgb(255, 255, 255).bold(` ${ENV.warnings.length} Warning${ENV.warnings.length > 1 ? 's' : ''} Occured `));
+					ENV.warnings.forEach((wrn, idx) => {
+						console.log(`${chalk.italic.bold(`${idx + 1}.`)} ${wrn.message}`);
+					})
+					console.log(chalk.bgRgb(255, 123, 0).rgb(255, 255, 255).bold(` Warnings Occured `));
+				}
 				const entry = ENV.get_ClassName(opts.e);
 				console.log(chalk.blueBright.bold(` Code  Generating `) + ' : finished');
 				const exports = [...ENV.exports.entries()];
@@ -166,15 +173,15 @@ else {
 			}
 
 		}).then(() => {
-			console.log(chalk.bgGreen.white.bold(` Compile Finished `));
+			console.log(chalk.bgGreen.rgb(255, 255, 255).bold(` Compile Finished `));
 			console.log(` in ${Time()}\n`);
 			process.exit(0);
 		}).catch(err => {
 			// console.log(err)
-			console.log(chalk.bgRedBright.white.bold(`  Error Occoured  `));
+			console.log(chalk.bgRedBright.rgb(255, 255, 255).bold(`  Error Occoured  `));
 			console.log(chalk.redBright.bold(`Failed to compile file '${opts.f}'\nmore info:`));
 			console.log(err.message);
-			console.log(chalk.bgRedBright.white.bold(`  Compile Failed  \n`));
+			console.log(chalk.bgRedBright.rgb(255, 255, 255).bold(`  Compile Failed  \n`));
 			process.exit(1);
 		})
 	}

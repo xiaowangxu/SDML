@@ -1,17 +1,24 @@
 <flags />
 <refs>
+	<component id="Curves" url="./Design/BoxTest.sdml" />
 </refs>
 <inputs>
 	<int name="time" default="0" />
 </inputs>
 <template>
-	<path>
-		<curveline />
-		<curveellipse />
-		<curveline />
-		<for array="range(2)" index="i">
+	<Curves>
+		<curves param>
+			<curveellipse />
 			<curveline />
 			<curveellipse />
-		</for>
-	</path>
+			<for array="range(2)" index="idx">
+				<curveellipse />
+				<curveline />
+				<if test="true">
+					<curveline />
+					<boxgeometry />
+				</if>
+			</for>
+		</curves>
+	</Curves>
 </template>

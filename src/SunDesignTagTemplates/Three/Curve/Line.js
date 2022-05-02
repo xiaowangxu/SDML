@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_CurveLine_0 =
 {
-    name: 'component_THREE_CurveLine', code: `class component_THREE_CurveLine extends ComponentBase {
+	name: 'component_THREE_CurveLine', code: `class component_THREE_CurveLine extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.init(i, c, s);
@@ -35,31 +35,31 @@ export const TAG_THREE_CurveLine_0 =
 }`}
 
 class SDML_THREE_CurveLine extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('curveline'), ['s', 'e']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('curveline'), ['s', 'e']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(curve-line id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(curve-line id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'curveline', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'curveline', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_CurveLine.type;
-    }
+	get_Type() {
+		return SDML_THREE_CurveLine.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_CurveLine_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_CurveLine_0);
+	}
 
-    static get type() {
-        return new Types({ curveline: 1 });
-    }
+	static get type() {
+		return new Types({ curveline: 1 });
+	}
 }
 
 registe_Tag('curveline', SDML_THREE_CurveLine);

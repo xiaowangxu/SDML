@@ -1,0 +1,39 @@
+File: .\Design\Box.sdml
+graph LR
+Input_time_8((time))
+Node_11(curve-ellipse id=$node_10)
+Node_13(curve-line id=$node_12)
+Node_15(curve-ellipse id=$node_14)
+Node_17(for id=$node_16)
+subgraph Scope_17
+Input_idx_19((idx))
+Node_21(curve-ellipse id=$node_20)
+Node_23(curve-line id=$node_22)
+Node_25(if id=$node_24)
+subgraph Scope_25
+subgraph If_25_true
+Node_28(curve-line id=$node_27)
+Node_30(box-geometry id=$node_29)
+end
+style If_25_true fill:#dbf8db
+end
+end
+Node_31(component url=./Design/BoxTest.sdml)
+Node_28 -->|curve| Node_25
+Node_30 -->|boxgeometry| Node_25
+Node_21 -->|curve| Node_17
+Node_23 -->|curve| Node_17
+Node_25 -->|curve| Node_17
+Node_25 -->|boxgeometry| Node_17
+Node_11 --> Node_31
+Node_13 --> Node_31
+Node_15 --> Node_31
+Node_17 --> Node_31
+=============================================================================
+File: ./Design/BoxTest.sdml
+graph LR
+Slot_curves>curves]
+Node_6(slot name=curves)
+Node_7(path id=$node_4 match=default)
+Slot_curves --> Node_6
+Node_6 -->|curve| Node_7

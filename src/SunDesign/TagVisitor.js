@@ -3,6 +3,7 @@ import { parse_Constant, parse_Expression, test_IdentifierName, test_Number } fr
 import { typeCheck, typeToString } from './sPARks.js';
 import { SDML_Compile_CodeGen, create_Component, SDML_Compile_Error } from './Compiler.js';
 import { registe_Tag } from './TagCollection.js';
+import chalk from 'chalk';
 
 export class SDML_Compiler_Visitor {
 	constructor(scope, name, id, parent, ast, params, param_inputs_for_bitmasks = [], auto_bitmasks = true) {
@@ -17,6 +18,7 @@ export class SDML_Compiler_Visitor {
 		this.params = {};
 		this.types_maps = {};
 		this.paramstemplate = params;
+		this.auto_reduced = false;
 		if (this.paramstemplate !== undefined) {
 			this.parse(this.paramstemplate, ast);
 		}
@@ -125,7 +127,7 @@ export class SDML_Compiler_Visitor {
 			}
 		}
 		if (err.length > 0) {
-			throw new SDML_Compile_Error(`when parsing node <${this.name}/> one or many expression errors occured as following:\n${err.map((i, idx) => `${idx + 1}. ${i}`).join('\n')}`);
+			throw new SDML_Compile_Error(`when parsing node <${this.name}/> one or many expression errors occured as following:\n${err.map((i, idx) => `${chalk.italic.bold(idx + 1)}. ${i}`).join('\n')}`);
 		}
 	}
 
@@ -135,6 +137,10 @@ export class SDML_Compiler_Visitor {
 
 	add_NodeRefs(set) {
 		set.forEach(i => this.noderefs.add(i));
+	}
+
+	after_TypeMapped() {
+
 	}
 
 	// codegen
@@ -201,6 +207,7 @@ class SDML_If extends SDML_Compiler_Visitor {
 				alias: '$test'
 			}
 		}, [], false);
+		this.auto_reduced = true;
 		const carry_params = {};
 		this.scoped_params = {};
 		for (const param in ast.attributes) {
@@ -227,6 +234,10 @@ class SDML_If extends SDML_Compiler_Visitor {
 			this.scoped_params[param_name].datatype = this.params[param_name].opt.datatype;
 		}
 
+		if (this.params.$test.opt.constant) {
+			this.scope.env.warnings.push(new Error(`in node <if test="${this.params.$test.str}" id="${this.id}" /> the 'test' parameter is static, you may remove the <if /> node with the static branch results`));
+		}
+
 		let true_branch = [];
 		let false_branch = [];
 		ast.children.forEach(c => {
@@ -235,6 +246,10 @@ class SDML_If extends SDML_Compiler_Visitor {
 		})
 		this.true_scope = true_branch.length === 0 ? null : this.scope.new_Scope(true_branch, { ...this.scoped_params }, true);
 		this.false_scope = false_branch.length === 0 ? null : this.scope.new_Scope(false_branch, { ...this.scoped_params }, true);
+		this.true_collection = this.true_scope?.collection;
+		this.false_collection = this.false_scope?.collection;
+		this.true_types = this.true_scope?.types;
+		this.false_types = this.false_scope?.types;
 		if (this.false_scope === null) {
 			if (this.true_scope === null) {
 				throw new SDML_Compile_Error(`in node <if id="${this.id}"/> it does not has any sub nodes, you should always provide either default or <else param> sub nodes`);
@@ -263,9 +278,6 @@ class SDML_If extends SDML_Compiler_Visitor {
 			// 	throw new SDML_Compile_Error(`in node <if id="${this.id}"/> the types of the true branch is not the same as the false branch:\nthe true branch types is:\n${true_types.to_List().map(i => `\t${i}`).join('\n')}\nthe false branch types is:\n${false_types.to_List().map(i => `\t${i}`).join('\n')}`);
 			// }
 		}
-
-
-
 		this.scope_deps = new Set([...(this.true_scope ? this.true_scope.scope_deps : []), ...(this.false_scope ? this.false_scope.scope_deps : [])]);
 		for (const param_name in this.scoped_params) {
 			this.scope_deps.delete(param_name);
@@ -282,16 +294,24 @@ class SDML_If extends SDML_Compiler_Visitor {
 		if (this.true_scope) {
 			const [nodes, links] = this.true_scope.$to_Mermaid([], link);
 			str += `\nsubgraph If_${this.uid}_true\n${nodes}\nend\nstyle If_${this.uid}_true fill:#dbf8db`;
-			for (const node of this.true_scope.collection.get_All('default')) {
-				links.push(`Node_${node.uid} --> Node_${this.uid}`);
-			}
+			// for (const node of this.true_scope.collection.get_All('default')) {
+			// 	links.push(`Node_${node.uid} --> Node_${this.uid}`);
+			// }
+			for (const type in this.true_collection.get('default'))
+				for (const node of this.true_collection.get_Class('default', type)) {
+					links.push(`Node_${node.uid} -->|${type}| Node_${this.uid}`);
+				}
 		}
 		if (this.false_scope) {
 			const [nodes, links] = this.false_scope.$to_Mermaid([], link);
 			str += `\nsubgraph If_${this.uid}_false\n${nodes}\nend\nstyle If_${this.uid}_false fill:#f8dedb`;
-			for (const node of this.false_scope.collection.get_All('default')) {
-				links.push(`Node_${node.uid} --> Node_${this.uid}`);
-			}
+			// for (const node of this.false_scope.collection.get_All('default')) {
+			// 	links.push(`Node_${node.uid} --> Node_${this.uid}`);
+			// }
+			for (const type in this.false_collection.get('default'))
+				for (const node of this.false_collection.get_Class('default', type)) {
+					links.push(`Node_${node.uid} -->|${type}| Node_${this.uid}`);
+				}
 		}
 		ans.push(`${str}\nend`);
 	}
@@ -300,6 +320,45 @@ class SDML_If extends SDML_Compiler_Visitor {
 		this.types.type_names.forEach(type => {
 			collection.add(param, type, this)
 		})
+	}
+
+	after_TypeMapped() {
+		this.true_scope?.order.forEach(n => {
+			if (!n.auto_reduced) return;
+			n.types_maps = { ...this.types_maps };
+			n.after_TypeMapped();
+		})
+		const [true_collection, true_types] = this.true_scope?.reduce_CollectionAndTypes(this.types_maps) ?? [null, null];
+		if (true_collection) this.true_collection = true_collection;
+		this.false_scope?.order.forEach(n => {
+			if (!n.auto_reduced) return;
+			n.types_maps = { ...this.types_maps };
+			n.after_TypeMapped();
+		})
+		const [false_collection, false_types] = this.false_scope?.reduce_CollectionAndTypes(this.types_maps) ?? [null, null];
+		if (false_collection) this.false_collection = false_collection;
+		this.true_types = true_types;
+		this.false_types = false_types;
+		if (false_types === null) {
+			this.types = true_types.make_Infinity();
+		}
+		else {
+			if (true_types === null) {
+				this.types = false_types.make_Infinity();
+			}
+			else {
+				if (true_types.match_Types(false_types)) {
+					this.types = true_types;
+				}
+				else {
+					this.types = true_types.merge_Types(false_types).make_Infinity();
+				}
+			}
+		}
+	}
+
+	get_TypeMapped(type) {
+		return [{ node: this, type }];
 	}
 
 	// codegen
@@ -312,16 +371,16 @@ class SDML_If extends SDML_Compiler_Visitor {
 		let code_true = null;
 		let code_false = null;
 		if (this.true_scope) {
-			code_true = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_True_${this.uid}`, this.true_scope, parent_codegen.opt).generate();
+			code_true = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_True_${this.uid}`, this.true_scope, { ...parent_codegen.opt, types_maps: this.types_maps, reduced_collection: this.true_collection }).generate();
 			parent_codegen.env.add_Template(`closure_If_True_${this.uid}`, code_true);
 		}
 		if (this.false_scope) {
-			code_false = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_False_${this.uid}`, this.false_scope, parent_codegen.opt).generate();
+			code_false = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_False_${this.uid}`, this.false_scope, { ...parent_codegen.opt, types_maps: this.types_maps, reduced_collection: this.false_collection }).generate();
 			parent_codegen.env.add_Template(`closure_If_False_${this.uid}`, code_false);
 		}
 		const types = this.types.type_names;
-		const true_types = this.true_scope ? this.true_scope.types.type_names : [];
-		const false_types = this.false_scope ? this.false_scope.types.type_names : [];
+		const true_types = this.true_scope ? this.true_types.type_names : [];
+		const false_types = this.false_scope ? this.false_types.type_names : [];
 
 		const deps = [...this.scope_deps, ...Object.keys(this.scoped_params)];
 		const bitmasks = new BitMask(['$test', ...deps]);
@@ -443,16 +502,16 @@ class SDML_If extends SDML_Compiler_Visitor {
 		let code_true = null;
 		let code_false = null;
 		if (this.true_scope) {
-			code_true = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_True_${this.uid}`, this.true_scope, parent_codegen.opt).generate();
+			code_true = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_True_${this.uid}`, this.true_scope, { ...parent_codegen.opt, types_maps: this.types_maps, reduced_collection: this.true_collection }).generate();
 			parent_codegen.env.add_Template(`closure_If_True_${this.uid}`, code_true);
 		}
 		if (this.false_scope) {
-			code_false = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_False_${this.uid}`, this.false_scope, parent_codegen.opt).generate();
+			code_false = new SDML_Compile_CodeGen(parent_codegen.env, `closure_If_False_${this.uid}`, this.false_scope, { ...parent_codegen.opt, types_maps: this.types_maps, reduced_collection: this.false_collection }).generate();
 			parent_codegen.env.add_Template(`closure_If_False_${this.uid}`, code_false);
 		}
 		const types = this.types.type_names;
-		const true_types = this.true_scope ? this.true_scope.types.type_names : [];
-		const false_types = this.false_scope ? this.false_scope.types.type_names : [];
+		const true_types = this.true_scope ? this.true_types.type_names : [];
+		const false_types = this.false_scope ? this.false_types.type_names : [];
 
 		const deps = [...this.scope_deps, ...Object.keys(this.scoped_params)];
 		const bitmasks = new BitMask(['$test', ...deps]);
@@ -629,9 +688,9 @@ class SDML_For extends SDML_Compiler_Visitor {
 		if (ast.children.length === 0) {
 			throw new SDML_Compile_Error(`in node <for id="${this.id}"/> it does not has any sub nodes, you should always provide sub nodes as the loop body`);
 		}
+		this.auto_reduced = true;
 		this.iter = ast.attributes.iter;
 		this.index = ast.attributes.index;
-
 		const carry_params = {};
 		this.scoped_params = {};
 		for (const param in ast.attributes) {
@@ -658,6 +717,10 @@ class SDML_For extends SDML_Compiler_Visitor {
 			this.scoped_params[param_name].datatype = this.params[param_name].opt.datatype;
 		}
 
+		if (this.params.$array.opt.constant) {
+			this.scope.env.warnings.push(new Error(`in node <for array="${this.params.$array.str}" id="${this.id}" /> the 'array' parameter is static, you may expand the <for /> node with the sub nodes for better performence`));
+		}
+
 		if (this.iter === undefined && this.index === undefined) {
 			throw new SDML_Compile_Error(`in node <for id="${this.id}"/> it requires a 'iter' or 'index' parameter like: <for array="..." iter="parameter1" index="parameter2"/> where parameter is a valid identifier name`);
 		}
@@ -680,6 +743,7 @@ class SDML_For extends SDML_Compiler_Visitor {
 			...(this.index ? { [this.index]: { uid: this.scope.env.uid, default: 'null', datatype: ExpTypes.base(ExpTypes.int) } } : {}),
 			...this.scoped_params,
 		});
+		this.collection = this.for_loop.collection;
 		this.types = this.for_loop.types.clone().make_Infinity();
 		this.scope_deps = new Set([...this.for_loop.scope_deps]);
 		if (this.iter)
@@ -702,9 +766,11 @@ class SDML_For extends SDML_Compiler_Visitor {
 		if (this.for_loop) {
 			const [nodes, links] = this.for_loop.$to_Mermaid([], link);
 			str += `\n${nodes}`;
-			for (const node of this.for_loop.collection.get_All('default')) {
-				links.push(`Node_${node.uid} --> Node_${this.uid}`);
-			}
+			// for (const param of this.collection.slots_name)
+			for (const type in this.collection.get('default'))
+				for (const node of this.collection.get_Class('default', type)) {
+					links.push(`Node_${node.uid} -->|${type}| Node_${this.uid}`);
+				}
 		}
 		ans.push(`${str}\nend`);
 	}
@@ -718,10 +784,26 @@ class SDML_For extends SDML_Compiler_Visitor {
 		})
 	}
 
+	after_TypeMapped() {
+		this.for_loop.order.forEach(n => {
+			if (!n.auto_reduced) return;
+			n.types_maps = { ...this.types_maps };
+			n.after_TypeMapped();
+		})
+		const [collection, types] = this.for_loop.reduce_CollectionAndTypes(this.types_maps);
+		this.types = types.make_Infinity();
+		this.collection = collection;
+	}
+
+	get_TypeMapped(type) {
+		return [{ node: this, type }];
+	}
+
 	generate(parent_codegen) {
-		console.log(this.types_maps);
+		// console.log(this.for_loop.collection.get("default"));
+		// console.log(this.types_maps, this.collection.collection.default);
 		const { for_diff = true } = parent_codegen.opt;
-		const codegen = new SDML_Compile_CodeGen(parent_codegen.env, `closure_For_${this.uid}`, this.for_loop, parent_codegen.opt);
+		const codegen = new SDML_Compile_CodeGen(parent_codegen.env, `closure_For_${this.uid}`, this.for_loop, { ...parent_codegen.opt, types_maps: this.types_maps, reduced_collection: this.collection });
 		const code = codegen.generate();
 		codegen.env.add_Template(`closure_For_${this.uid}`, code);
 		const types = this.types.type_names;
@@ -859,7 +941,7 @@ class SDML_Slot extends SDML_Compiler_Visitor {
 		super(scope, name, id, parent, ast, {}, [], false);
 		this.slotname = ast.attributes.name;
 		if (this.slotname === undefined) {
-			throw new SDML_Compile_Error(`in node <for id="${this.id}"/> it requires a 'iter' parameter like: <for array="..." iter="parameter"/> where parameter is a valid identifier name`);
+			throw new SDML_Compile_Error(`in node <slot id="${this.id}"/> it requires a 'name' parameter like: <slot name="parameter"/> where parameter is pre-defined in the <slots /> entry`);
 		}
 		if (!(this.slotname in this.scope.slots)) {
 			throw new SDML_Compile_Error(`in node <slot name="${this.slotname}"/> is not defined in the current scope`);

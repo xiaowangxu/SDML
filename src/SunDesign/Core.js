@@ -317,6 +317,10 @@ export class Types {
 		this.types = types === null ? null : { ...types };
 	}
 
+	get_Count(type) {
+		return this.types[type];
+	}
+
 	to_Map() {
 		return this.is_Empty() ? new Map() : new Map(Object.entries(this.types));
 	}
