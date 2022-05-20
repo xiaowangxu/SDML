@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_OBJ_0 =
 {
-    name: 'component_THREE_OBJ', code: `class component_THREE_OBJ extends ComponentBase {
+	name: 'component_THREE_OBJ', code: `class component_THREE_OBJ extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -32,37 +32,36 @@ export const TAG_THREE_OBJ_0 =
     }
     dispose() {
         this.r.n.object3d[0].dispose();
-        this.r.n.object3d = undefined;
         // console.log("dispose component_THREE_OBJ");
     }
 }`}
 
 class SDML_THREE_OBJ extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('obj'), ['url']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('obj'), ['url']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(object3d id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(object3d id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'object3d', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'object3d', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_OBJ.type;
-    }
+	get_Type() {
+		return SDML_THREE_OBJ.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_OBJ_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_OBJ_0);
+	}
 
-    static get type() {
-        return new Types({ object3d: 1 });
-    }
+	static get type() {
+		return new Types({ object3d: 1 });
+	}
 }
 
 registe_Tag('obj', SDML_THREE_OBJ);

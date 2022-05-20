@@ -45,6 +45,7 @@ import './Three/Curve/Spline3D.js';
 import './Three/Curve/Path.js';
 import './Three/Curve/Path3D.js';
 import './Three/Curve/Shape.js';
+import './Three/Curve/CurveRotate.js';
 import './Three/Loader/STL.js';
 import './Three/Loader/OBJ.js';
 

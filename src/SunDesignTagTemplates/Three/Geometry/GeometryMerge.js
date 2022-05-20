@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_GeometryMerge_0 =
 {
-    name: 'component_THREE_GeometryMerge', code: `class component_THREE_GeometryMerge extends ComponentBase {
+	name: 'component_THREE_GeometryMerge', code: `class component_THREE_GeometryMerge extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,64 +34,63 @@ export const TAG_THREE_GeometryMerge_0 =
     }
     dispose() {
         this.r.n.geometry[0].dispose();
-        this.r.n.geometry = undefined;
         // console.log("dispose component_THREE_GeometryMerge");
     }
 }`}
 
 class SDML_THREE_GeometryMerge extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, {}, []);
-        this.geos = null;
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, {}, []);
+		this.geos = null;
+	}
 
-    static inputs = {
-        default: {
-            default: new Types({
-                geometry: Infinity
-            })
-        }
-    };
+	static inputs = {
+		default: {
+			default: new Types({
+				geometry: Infinity
+			})
+		}
+	};
 
-    to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(geometry-transform id=${this.id} match=${this.matched})`);
-        for (const geo of this.geos)
-            link.push(`Node_${geo.uid} -->|geometry| Node_${this.uid}`);
-    }
+	to_Mermaid(ans, link) {
+		ans.push(`Node_${this.uid}(geometry-transform id=${this.id} match=${this.matched})`);
+		for (const geo of this.geos)
+			link.push(`Node_${geo.uid} -->|geometry| Node_${this.uid}`);
+	}
 
-    receive_Sub(types, collection, match_type) {
-        switch (match_type) {
-            case 'default': {
-                const defaults = collection.get_Class('default', 'geometry');
-                this.geos = defaults;
-                for (const geo of this.geos)
-                    this.scope.graph.add_Edge(geo, this);
-                break;
-            }
-        }
-    }
+	receive_Sub(types, collection, match_type) {
+		switch (match_type) {
+			case 'default': {
+				const defaults = collection.get_Class('default', 'geometry');
+				this.geos = defaults;
+				for (const geo of this.geos)
+					this.scope.graph.add_Edge(geo, this);
+				break;
+			}
+		}
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'geometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'geometry', this);
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_GeometryMerge_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_GeometryMerge_0);
+	}
 
-    get_NodeChildren(codegen) {
-        const ans = { default: { geometry: [] } };
-        this.geos.forEach(s => ans.default.geometry.push(...s.get_TypeMapped('geometry')));
-        return ans;
-    }
+	get_NodeChildren(codegen) {
+		const ans = { default: { geometry: [] } };
+		this.geos.forEach(s => ans.default.geometry.push(...s.get_TypeMapped('geometry')));
+		return ans;
+	}
 
-    get_Type() {
-        return SDML_THREE_GeometryMerge.type;
-    }
+	get_Type() {
+		return SDML_THREE_GeometryMerge.type;
+	}
 
-    static get type() {
-        return new Types({ geometry: 1 });
-    }
+	static get type() {
+		return new Types({ geometry: 1 });
+	}
 }
 
 registe_Tag('geometry-merge', SDML_THREE_GeometryMerge);

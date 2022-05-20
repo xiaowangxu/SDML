@@ -1136,24 +1136,6 @@ export const SunDesignExpressionPrelude = {
 					{
 						type: "datatype",
 						datatype: "base",
-						value: "vec3"
-					}, {
-						type: "datatype",
-						datatype: "base",
-						value: "vec3"
-					}
-				],
-				export: [{
-					type: "datatype",
-					datatype: "base",
-					value: "vec3"
-				}, "multVec3Vec3"]
-			},
-			{
-				inputs: [
-					{
-						type: "datatype",
-						datatype: "base",
 						value: "quat"
 					}, {
 						type: "datatype",
@@ -1302,186 +1284,6 @@ export const SunDesignExpressionPrelude = {
 				}, "dotVec3Vec3"]
 			},
 		],
-		// "==": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base' && BASE_TYPE.includes.type_1.value) {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_eq"]
-		//         }
-		//         return [null, "operator a == b requires a and b have the same type"]
-		//     }
-		// }],
-		// ">": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base' && BASE_TYPE.includes.type_1.value) {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_g"]
-		//         }
-		//         return [null, "operator a > b requires a and b have the same type"]
-		//     }
-		// }],
-		// "<": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base' && BASE_TYPE.includes.type_1.value) {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_l"]
-		//         }
-		//         return [null, "operator a < b requires a and b have the same type"]
-		//     }
-		// }],
-		// ">=": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base') {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_eq_g"]
-		//         }
-		//         return [null, "operator a >= b requires a and b have the same type"]
-		//     }
-		// }],
-		// "<=": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base') {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_eq_l"]
-		//         }
-		//         return [null, "operator a <= b requires a and b have the same type"]
-		//     }
-		// }],
-		// "!=": [{
-		//     inputs: [
-		//         {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }, {
-		//             type: "datatype",
-		//             datatype: "base",
-		//             value: "$any"
-		//         }
-		//     ],
-		//     export: (type_1, type_2) => {
-		//         if (typeCheck(type_1, type_2)) {
-		//             if (type_1.datatype === 'base') {
-		//                 return [{
-		//                     type: "datatype",
-		//                     datatype: "base",
-		//                     value: "bool"
-		//                 }, "$keep"]
-		//             }
-		//             return [{
-		//                 type: "datatype",
-		//                 datatype: "base",
-		//                 value: "bool"
-		//             }, "cmp_neq"]
-		//         }
-		//         return [null, "operator a != b requires a and b have the same type"]
-		//     }
-		// }],
 		"&&": [{
 			inputs: [
 				{
@@ -2035,6 +1837,24 @@ export const SunDesignExpressionPrelude = {
 					datatype: "base",
 					value: "quat"
 				}, "makeQuatRotateTo"]
+			}
+		],
+		"angleTo": [
+			{
+				inputs: [{
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}, {
+					type: "datatype",
+					datatype: "base",
+					value: "vec3"
+				}],
+				export: [{
+					type: "datatype",
+					datatype: "base",
+					value: "float"
+				}, "makeVec3AngleTo"]
 			}
 		],
 		"mat4": [
@@ -2994,6 +2814,9 @@ const SunDesignExpressionOptimizations = {
 		makeQuatRotateTo: (vec1, vec2) => {
 			const quat = new THREE.Quaternion().setFromUnitVectors(vec1.value.toTHREEVector3(), vec2.value.toTHREEVector3())
 			return OptQuaternion.toOptQuaternion(quat)
+		},
+		makeVec3AngleTo: (vec1, vec2) => {
+			return vec1.value.toTHREEVector3().angleTo(vec2.value.toTHREEVector3())
 		},
 
 		// mat4
@@ -4021,6 +3844,9 @@ export const SunDesignCodeGenPassVisitor = {
 	multScalerVec2_0: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Vector2().copy(${val[1]}).multiplyScalar(${val[0]}))`
 	},
+	divScalerVec2: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).divideScalar(${val[1]}))`
+	},
 	addVec2: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Vector2().copy(${val[0]}).add(${val[1]}))`
 	},
@@ -4040,6 +3866,9 @@ export const SunDesignCodeGenPassVisitor = {
 	multScalerVec3_0: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Vector3().copy(${val[1]}).multiplyScalar(${val[0]}))`
 	},
+	divScalerVec3: (val, opt, codegen) => {
+		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).divideScalar(${val[1]}))`
+	},
 	addVec3: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Vector3().copy(${val[0]}).add(${val[1]}))`
 	},
@@ -4058,6 +3887,9 @@ export const SunDesignCodeGenPassVisitor = {
 	},
 	makeQuatRotateTo: (val, opt, codegen) => {
 		return `(new ${opt.THREE}.Quaternion().setFromUnitVectors(${val[0]}, ${val[1]}))`
+	},
+	makeVec3AngleTo: (val, opt, codegen) => {
+		return `(${val[0]}.angleTo(${val[1]}))`
 	},
 	// color
 	makeColorRGB: (val, opt, codegen) => {

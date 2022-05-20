@@ -56,7 +56,6 @@ export const TAG_THREE_ExtrudeGeometry_0 =
     }
     dispose() {
         this.r.n.extrudegeometry[0].dispose();
-        this.r.n.extrudegeometry = undefined;
         // console.log("dispose TAG_THREE_ExtrudeGeometry_0");
     }
 }`}

@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_SphereGeometry_0 =
 {
-    name: 'component_THREE_SphereGeometry', code: `class component_THREE_SphereGeometry extends ComponentBase {
+	name: 'component_THREE_SphereGeometry', code: `class component_THREE_SphereGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_SphereGeometry_0 =
     }
     dispose() {
         this.r.n.spheregeometry[0].dispose();
-        this.r.n.spheregeometry = undefined;
         // console.log("dispose component_THREE_SphereGeometry");
     }
 }`}
 
 class SDML_THREE_SphereGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('spheregeometry'), ['r', 'ds', 'hs', 'ps', 'pe', 'ts', 'te']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('spheregeometry'), ['r', 'ds', 'hs', 'ps', 'pe', 'ts', 'te']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(sphere-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(sphere-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'spheregeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'spheregeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_SphereGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_SphereGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_SphereGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_SphereGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ spheregeometry: 1 });
-    }
+	static get type() {
+		return new Types({ spheregeometry: 1 });
+	}
 }
 
 registe_Tag('spheregeometry', SDML_THREE_SphereGeometry);

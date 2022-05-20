@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_TorusGeometry_0 =
 {
-    name: 'component_THREE_TorusGeometry', code: `class component_THREE_TorusGeometry extends ComponentBase {
+	name: 'component_THREE_TorusGeometry', code: `class component_THREE_TorusGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_TorusGeometry_0 =
     }
     dispose() {
         this.r.n.torusgeometry[0].dispose();
-        this.r.n.torusgeometry = undefined;
         // console.log("dispose component_THREE_TorusGeometry");
     }
 }`}
 
 class SDML_THREE_TorusGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('torusgeometry'), ['r', 't', 'rs', 'ts', 'l']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('torusgeometry'), ['r', 't', 'rs', 'ts', 'l']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(torus-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(torus-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'torusgeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'torusgeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_TorusGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_TorusGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_TorusGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_TorusGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ torusgeometry: 1 });
-    }
+	static get type() {
+		return new Types({ torusgeometry: 1 });
+	}
 }
 
 registe_Tag('torusgeometry', SDML_THREE_TorusGeometry);

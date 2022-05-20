@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_TetrahedronGeometry_0 =
 {
-    name: 'component_THREE_TetrahedronGeometry', code: `class component_THREE_TetrahedronGeometry extends ComponentBase {
+	name: 'component_THREE_TetrahedronGeometry', code: `class component_THREE_TetrahedronGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_TetrahedronGeometry_0 =
     }
     dispose() {
         this.r.n.tetrahedrongeometry[0].dispose();
-        this.r.n.tetrahedrongeometry = undefined;
         // console.log("dispose component_THREE_TetrahedronGeometry");
     }
 }`}
 
 class SDML_THREE_TetrahedronGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('tetrahedrongeometry'), ['r', 's']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('tetrahedrongeometry'), ['r', 's']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(dodecahedron-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(dodecahedron-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'tetrahedrongeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'tetrahedrongeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_TetrahedronGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_TetrahedronGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_TetrahedronGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_TetrahedronGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ tetrahedrongeometry: 1 });
-    }
+	static get type() {
+		return new Types({ tetrahedrongeometry: 1 });
+	}
 }
 
 registe_Tag('tetrahedrongeometry', SDML_THREE_TetrahedronGeometry);

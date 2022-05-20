@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_CSGIntersect_0 =
 {
-    name: 'component_THREE_CSGIntersect', code: `class component_THREE_CSGIntersect extends ComponentBase {
+	name: 'component_THREE_CSGIntersect', code: `class component_THREE_CSGIntersect extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -50,74 +50,73 @@ export const TAG_THREE_CSGIntersect_0 =
     }
     dispose() {
         this.r.n.geometry[0].dispose();
-        this.r.n.geometry = undefined;
         // console.log("dispose TAG_THREE_CSGIntersect_0");
     }
 }`}
 
 class SDML_THREE_CSGIntersect extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('csg-intersect'), []);
-        this.matched = null;
-        this.subs = null;
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('csg-intersect'), []);
+		this.matched = null;
+		this.subs = null;
+	}
 
-    static entries = [];
-    static inputs = {
-        default: {
-            default: new Types({
-                geometry: 2,
-            })
-        },
-    };
-    static exports = {};
+	static entries = [];
+	static inputs = {
+		default: {
+			default: new Types({
+				geometry: 2,
+			})
+		},
+	};
+	static exports = {};
 
-    to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(csg-union id=${this.id} match=${this.matched})`);
-        if (this.matched === 'default') {
-            for (const sub of this.subs)
-                link.push(`Node_${sub.uid} -->|geometry| Node_${this.uid}`);
-        }
-    }
+	to_Mermaid(ans, link) {
+		ans.push(`Node_${this.uid}(csg-union id=${this.id} match=${this.matched})`);
+		if (this.matched === 'default') {
+			for (const sub of this.subs)
+				link.push(`Node_${sub.uid} -->|geometry| Node_${this.uid}`);
+		}
+	}
 
-    receive_Sub(types, collection, match_type) {
-        this.matched = match_type;
-        switch (match_type) {
-            case 'default': {
-                const defaults = collection.get_Class('default', 'geometry');
-                this.subs = defaults;
-                for (const node of defaults)
-                    this.scope.graph.add_Edge(node, this);
-                break;
-            }
-        }
-    }
+	receive_Sub(types, collection, match_type) {
+		this.matched = match_type;
+		switch (match_type) {
+			case 'default': {
+				const defaults = collection.get_Class('default', 'geometry');
+				this.subs = defaults;
+				for (const node of defaults)
+					this.scope.graph.add_Edge(node, this);
+				break;
+			}
+		}
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'geometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'geometry', this);
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_CSGIntersect_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_CSGIntersect_0);
+	}
 
-    get_NodeChildren(codegen) {
-        switch (this.matched) {
-            case 'default': {
-                const ans = { default: { geometry: [] } };
-                this.subs.forEach(s => ans.default.geometry.push(...s.get_TypeMapped('geometry')));
-                return ans;
-            }
-        }
-    }
+	get_NodeChildren(codegen) {
+		switch (this.matched) {
+			case 'default': {
+				const ans = { default: { geometry: [] } };
+				this.subs.forEach(s => ans.default.geometry.push(...s.get_TypeMapped('geometry')));
+				return ans;
+			}
+		}
+	}
 
-    get_Type() {
-        return SDML_THREE_CSGIntersect.type;
-    }
+	get_Type() {
+		return SDML_THREE_CSGIntersect.type;
+	}
 
-    static get type() {
-        return new Types({ geometry: 1 });
-    }
+	static get type() {
+		return new Types({ geometry: 1 });
+	}
 }
 
 registe_Tag('csg-intersect', SDML_THREE_CSGIntersect);

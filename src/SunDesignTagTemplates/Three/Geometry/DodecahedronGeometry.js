@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_DodecahedronGeometry_0 =
 {
-    name: 'component_THREE_DodecahedronGeometry', code: `class component_THREE_DodecahedronGeometry extends ComponentBase {
+	name: 'component_THREE_DodecahedronGeometry', code: `class component_THREE_DodecahedronGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_DodecahedronGeometry_0 =
     }
     dispose() {
         this.r.n.dodecahedrongeometry[0].dispose();
-        this.r.n.dodecahedrongeometry = undefined;
         // console.log("dispose component_THREE_DodecahedronGeometry");
     }
 }`}
 
 class SDML_THREE_DodecahedronGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('dodecahedrongeometry'), ['r', 's']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('dodecahedrongeometry'), ['r', 's']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(dodecahedron-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(dodecahedron-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'dodecahedrongeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'dodecahedrongeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_DodecahedronGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_DodecahedronGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_DodecahedronGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_DodecahedronGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ dodecahedrongeometry: 1 });
-    }
+	static get type() {
+		return new Types({ dodecahedrongeometry: 1 });
+	}
 }
 
 registe_Tag('dodecahedrongeometry', SDML_THREE_DodecahedronGeometry);

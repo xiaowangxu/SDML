@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_ConeGeometry_0 =
 {
-    name: 'component_THREE_ConeGeometry', code: `class component_THREE_ConeGeometry extends ComponentBase {
+	name: 'component_THREE_ConeGeometry', code: `class component_THREE_ConeGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_ConeGeometry_0 =
     }
     dispose() {
         this.r.n.conegeometry[0].dispose();
-        this.r.n.conegeometry = undefined;
         // console.log("dispose component_THREE_ConeGeometry");
     }
 }`}
 
 class SDML_THREE_ConeGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('conegeometry'), ['r', 'h', 'rs', 'hs', 'capped', 'ts', 'tl']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('conegeometry'), ['r', 'h', 'rs', 'hs', 'capped', 'ts', 'tl']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(cone-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(cone-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'conegeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'conegeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_ConeGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_ConeGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_ConeGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_ConeGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ conegeometry: 1 });
-    }
+	static get type() {
+		return new Types({ conegeometry: 1 });
+	}
 }
 
 registe_Tag('conegeometry', SDML_THREE_ConeGeometry);

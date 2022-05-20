@@ -143,7 +143,7 @@ export const ALL_INPUTS_TYPES = {
 	},
 	euler: {
 		default: (val) => { return val },
-		datatype: () => ExpTypes.base(ExpTypes.vec3),
+		datatype: () => ExpTypes.base(ExpTypes.euler),
 		diff: (dep) => {
 			return `!this.i.${dep}.equals(i.${dep})`;
 		}
@@ -185,6 +185,10 @@ export const ALL_INPUTS_TYPES = {
 	'vec3-arr': {
 		default: (val) => { return val },
 		datatype: () => ExpTypes.array(ExpTypes.base(ExpTypes.vec3)),
+	},
+	'material': {
+		default: (val) => { return val },
+		datatype: () => ExpTypes.array(ExpTypes.base('material')),
 	},
 }
 

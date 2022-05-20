@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_GeometryTransform_0 =
 {
-    name: 'component_THREE_GeometryTransform', code: `class component_THREE_GeometryTransform extends ComponentBase {
+	name: 'component_THREE_GeometryTransform', code: `class component_THREE_GeometryTransform extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -37,65 +37,64 @@ export const TAG_THREE_GeometryTransform_0 =
     }
     dispose() {
         this.r.n.geometry[0].dispose();
-        this.r.n.geometry = undefined;
         // console.log("dispose component_THREE_GeometryTransform");
     }
 }`}
 
 class SDML_THREE_GeometryTransform extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, {
-            transform: {
-                datatype: ExpTypes.base(ExpTypes.mat4)
-            }
-        }, ['transform']);
-        this.geo = null;
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, {
+			transform: {
+				datatype: ExpTypes.base(ExpTypes.mat4)
+			}
+		}, ['transform']);
+		this.geo = null;
+	}
 
-    static inputs = {
-        default: {
-            default: new Types({
-                geometry: 1
-            })
-        }
-    };
+	static inputs = {
+		default: {
+			default: new Types({
+				geometry: 1
+			})
+		}
+	};
 
-    to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(geometry-transform id=${this.id} match=${this.matched})`);
-        link.push(`Node_${this.geo.uid} -->|geometry| Node_${this.uid}`);
-    }
+	to_Mermaid(ans, link) {
+		ans.push(`Node_${this.uid}(geometry-transform id=${this.id} match=${this.matched})`);
+		link.push(`Node_${this.geo.uid} -->|geometry| Node_${this.uid}`);
+	}
 
-    receive_Sub(types, collection, match_type) {
-        switch (match_type) {
-            case 'default': {
-                const defaults = collection.get_Class('default', 'geometry');
-                this.geo = defaults[0];
-                this.scope.graph.add_Edge(this.geo, this);
-                break;
-            }
-        }
-    }
+	receive_Sub(types, collection, match_type) {
+		switch (match_type) {
+			case 'default': {
+				const defaults = collection.get_Class('default', 'geometry');
+				this.geo = defaults[0];
+				this.scope.graph.add_Edge(this.geo, this);
+				break;
+			}
+		}
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'geometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'geometry', this);
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_GeometryTransform_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_GeometryTransform_0);
+	}
 
-    get_NodeChildren(codegen) {
-        const ans = { default: { geometry: [...this.geo.get_TypeMapped('geometry')] } };
-        return ans;
-    }
+	get_NodeChildren(codegen) {
+		const ans = { default: { geometry: [...this.geo.get_TypeMapped('geometry')] } };
+		return ans;
+	}
 
-    get_Type() {
-        return SDML_THREE_GeometryTransform.type;
-    }
+	get_Type() {
+		return SDML_THREE_GeometryTransform.type;
+	}
 
-    static get type() {
-        return new Types({ geometry: 1 });
-    }
+	static get type() {
+		return new Types({ geometry: 1 });
+	}
 }
 
 registe_Tag('geometry-transform', SDML_THREE_GeometryTransform);

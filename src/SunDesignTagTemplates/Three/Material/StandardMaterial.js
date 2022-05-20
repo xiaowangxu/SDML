@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_StandardMaterial_0 =
 {
-    name: 'component_THREE_StandardMaterial', code: `class component_THREE_StandardMaterial extends ComponentBase {
+	name: 'component_THREE_StandardMaterial', code: `class component_THREE_StandardMaterial extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -54,41 +54,40 @@ export const TAG_THREE_StandardMaterial_0 =
     }
     dispose() {
         this.r.n.standardmaterial[0].dispose();
-        this.r.n.standardmaterial = undefined;
         // console.log("dispose component_THREE_BoxGeometry");
     }
 }`}
 
 class SDML_THREE_Material extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('standardmaterial'), ['color', 'emissive', 'roughness', 'metalness', 'flat', 'wireframe']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('standardmaterial'), ['color', 'emissive', 'roughness', 'metalness', 'flat', 'wireframe']);
+	}
 
-    static inputs = {
-        default: {
-            default: new Types()
-        }
-    };
+	static inputs = {
+		default: {
+			default: new Types()
+		}
+	};
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(material id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(material id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'standardmaterial', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'standardmaterial', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_Material.type;
-    }
+	get_Type() {
+		return SDML_THREE_Material.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_StandardMaterial_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_StandardMaterial_0);
+	}
 
-    static get type() {
-        return new Types({ standardmaterial: 1 });
-    }
+	static get type() {
+		return new Types({ standardmaterial: 1 });
+	}
 }
 
 registe_Tag('standardmaterial', SDML_THREE_Material);

@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_IcosahedronGeometry_0 =
 {
-    name: 'component_THREE_IcosahedronGeometry', code: `class component_THREE_IcosahedronGeometry extends ComponentBase {
+	name: 'component_THREE_IcosahedronGeometry', code: `class component_THREE_IcosahedronGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -34,37 +34,36 @@ export const TAG_THREE_IcosahedronGeometry_0 =
     }
     dispose() {
         this.r.n.icosahedrongeometry[0].dispose();
-        this.r.n.icosahedrongeometry = undefined;
         // console.log("dispose component_THREE_IcosahedronGeometry");
     }
 }`}
 
 class SDML_THREE_IcosahedronGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('icosahedrongeometry'), ['r', 's']);
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('icosahedrongeometry'), ['r', 's']);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(icosahedron-geometry id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(icosahedron-geometry id=${this.id})`);
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'icosahedrongeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'icosahedrongeometry', this);
+	}
 
-    get_Type() {
-        return SDML_THREE_IcosahedronGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_IcosahedronGeometry.type;
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_IcosahedronGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_IcosahedronGeometry_0);
+	}
 
-    static get type() {
-        return new Types({ icosahedrongeometry: 1 });
-    }
+	static get type() {
+		return new Types({ icosahedrongeometry: 1 });
+	}
 }
 
 registe_Tag('icosahedrongeometry', SDML_THREE_IcosahedronGeometry);

@@ -139,7 +139,7 @@ export class SDML_Compiler_Visitor {
 		set.forEach(i => this.noderefs.add(i));
 	}
 
-	after_TypeMapped() {
+	after_TypeMapped(new_types_maps) {
 
 	}
 
@@ -322,18 +322,17 @@ class SDML_If extends SDML_Compiler_Visitor {
 		})
 	}
 
-	after_TypeMapped() {
-		this.true_scope?.order.forEach(n => {
+	after_TypeMapped(new_types_maps) {
+		if (new_types_maps) this.types_maps = { ...this.types_maps, ...new_types_maps };
+		this.true_scope?.collection.get_AllChildren('default').forEach(n => {
 			if (!n.auto_reduced) return;
-			n.types_maps = { ...this.types_maps };
-			n.after_TypeMapped();
+			n.after_TypeMapped({ ...this.types_maps });
 		})
 		const [true_collection, true_types] = this.true_scope?.reduce_CollectionAndTypes(this.types_maps) ?? [null, null];
 		if (true_collection) this.true_collection = true_collection;
-		this.false_scope?.order.forEach(n => {
+		this.false_scope?.collection.get_AllChildren('default').forEach(n => {
 			if (!n.auto_reduced) return;
-			n.types_maps = { ...this.types_maps };
-			n.after_TypeMapped();
+			n.after_TypeMapped({ ...this.types_maps });
 		})
 		const [false_collection, false_types] = this.false_scope?.reduce_CollectionAndTypes(this.types_maps) ?? [null, null];
 		if (false_collection) this.false_collection = false_collection;
@@ -784,11 +783,11 @@ class SDML_For extends SDML_Compiler_Visitor {
 		})
 	}
 
-	after_TypeMapped() {
-		this.for_loop.order.forEach(n => {
+	after_TypeMapped(new_types_maps) {
+		if (new_types_maps) this.types_maps = { ...this.types_maps, ...new_types_maps };
+		this.for_loop.collection.get_AllChildren('default').forEach(n => {
 			if (!n.auto_reduced) return;
-			n.types_maps = { ...this.types_maps };
-			n.after_TypeMapped();
+			n.after_TypeMapped({ ...this.types_maps });
 		})
 		const [collection, types] = this.for_loop.reduce_CollectionAndTypes(this.types_maps);
 		this.types = types.make_Infinity();

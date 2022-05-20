@@ -10,7 +10,7 @@ import { registe_Tag } from '../../../SunDesign/TagCollection.js';
 
 export const TAG_THREE_LatheGeometry_0 =
 {
-    name: 'component_THREE_LatheGeometry', code: `class component_THREE_LatheGeometry extends ComponentBase {
+	name: 'component_THREE_LatheGeometry', code: `class component_THREE_LatheGeometry extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.b = [0];
@@ -42,69 +42,68 @@ export const TAG_THREE_LatheGeometry_0 =
     }
     dispose() {
         this.r.n.lathegeometry[0].dispose();
-        this.r.n.lathegeometry = undefined;
         // console.log("dispose component_THREE_LatheGeometry");
     }
 }`}
 
 class SDML_THREE_LatheGeometry extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        super(scope, name, id, parent, ast, TypesManagerSingleton.param('lathegeometry'), ['rs', 'ps', 'ts', 'tl']);
-        this.curve = null;
-        this.matched = null;
-    }
+	constructor(scope, name, id, parent, ast) {
+		super(scope, name, id, parent, ast, TypesManagerSingleton.param('lathegeometry'), ['rs', 'ps', 'ts', 'tl']);
+		this.curve = null;
+		this.matched = null;
+	}
 
-    static inputs = {
-        default: {
-            default: new Types({
-                curve: 1
-            }),
-        }
-    };
+	static inputs = {
+		default: {
+			default: new Types({
+				curve: 1
+			}),
+		}
+	};
 
-    to_Mermaid(ans, link) {
-        ans.push(`Node_${this.uid}(lathe-geometry id=${this.id} match=${this.matched})`);
-        if (this.matched === 'default') {
-            link.push(`Node_${this.curve.uid} -->|curve| Node_${this.uid}`);
-        }
-    }
+	to_Mermaid(ans, link) {
+		ans.push(`Node_${this.uid}(lathe-geometry id=${this.id} match=${this.matched})`);
+		if (this.matched === 'default') {
+			link.push(`Node_${this.curve.uid} -->|curve| Node_${this.uid}`);
+		}
+	}
 
-    receive_Sub(types, collection, match_type) {
-        this.matched = match_type;
-        switch (match_type) {
-            case 'default': {
-                const curve = collection.get_Class('default', 'curve');
-                this.curve = curve[0];
-                this.scope.graph.add_Edge(this.curve, this);
-                break;
-            }
-        }
-    }
+	receive_Sub(types, collection, match_type) {
+		this.matched = match_type;
+		switch (match_type) {
+			case 'default': {
+				const curve = collection.get_Class('default', 'curve');
+				this.curve = curve[0];
+				this.scope.graph.add_Edge(this.curve, this);
+				break;
+			}
+		}
+	}
 
-    add_ToCollection(collection, param) {
-        collection.add(param, 'lathegeometry', this);
-    }
+	add_ToCollection(collection, param) {
+		collection.add(param, 'lathegeometry', this);
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_THREE_LatheGeometry_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_THREE_LatheGeometry_0);
+	}
 
-    get_NodeChildren(codegen) {
-        switch (this.matched) {
-            case 'default': {
-                const ans = { default: { curve: [...this.curve.get_TypeMapped('curve')] } };
-                return ans;
-            }
-        }
-    }
+	get_NodeChildren(codegen) {
+		switch (this.matched) {
+			case 'default': {
+				const ans = { default: { curve: [...this.curve.get_TypeMapped('curve')] } };
+				return ans;
+			}
+		}
+	}
 
-    get_Type() {
-        return SDML_THREE_LatheGeometry.type;
-    }
+	get_Type() {
+		return SDML_THREE_LatheGeometry.type;
+	}
 
-    static get type() {
-        return new Types({ lathegeometry: 1 });
-    }
+	static get type() {
+		return new Types({ lathegeometry: 1 });
+	}
 }
 
 registe_Tag('lathegeometry', SDML_THREE_LatheGeometry);

@@ -7,7 +7,7 @@ import { registe_Tag } from '../../SunDesign/TagCollection.js';
 
 const TAG_ComputeBase_0 =
 {
-    name: 'component_ComputeBase', code: `class component_ComputeBase extends ComponentBase {
+	name: 'component_ComputeBase', code: `class component_ComputeBase extends ComponentBase {
     constructor(i, c, s) {
         super();
         this.init(i, c, s);
@@ -31,57 +31,57 @@ const TAG_ComputeBase_0 =
 }`}
 
 class SDML_Compute extends SDML_Compiler_Visitor {
-    constructor(scope, name, id, parent, ast) {
-        const exp_type = ALL_INPUTS_TYPES[SDML_Compute.get_HintType(ast)[0]].datatype();
-        // console.log(exp_type);
-        super(scope, name, id, parent, ast, {
-            exp: {
-                datatype: exp_type
-            }
-        });
-        // console.log(ast, this);
-    }
+	constructor(scope, name, id, parent, ast) {
+		const exp_type = ALL_INPUTS_TYPES[SDML_Compute.get_HintType(ast)[0]].datatype();
+		// console.log(exp_type);
+		super(scope, name, id, parent, ast, {
+			exp: {
+				datatype: exp_type
+			}
+		});
+		// console.log(ast, this);
+	}
 
-    static inputs = Types.NONE;
+	static inputs = Types.NONE;
 
-    to_Mermaid(ans) {
-        ans.push(`Node_${this.uid}(compute id=${this.id})`);
-    }
+	to_Mermaid(ans) {
+		ans.push(`Node_${this.uid}(compute id=${this.id})`);
+	}
 
-    receive_Sub(types, collection, match_type) {
-    }
+	receive_Sub(types, collection, match_type) {
+	}
 
-    add_ToCollection(collection, param) {
-    }
+	add_ToCollection(collection, param) {
+	}
 
-    get_NewNode(codegen) {
-        return codegen.registe_Template(TAG_ComputeBase_0);
-    }
+	get_NewNode(codegen) {
+		return codegen.registe_Template(TAG_ComputeBase_0);
+	}
 
-    get_Type() {
-        return SDML_Compute.type;
-    }
+	get_Type() {
+		return SDML_Compute.type;
+	}
 
-    static get type() {
-        return new Types();
-    }
+	static get type() {
+		return new Types();
+	}
 
-    static get_HintType(ast) {
-        const types = [];
-        for (const type in ALL_INPUTS_TYPES) {
-            if (type in ast.attributes) types.push(type);
-        }
-        return types;
-    }
+	static get_HintType(ast) {
+		const types = [];
+		for (const type in ALL_INPUTS_TYPES) {
+			if (type in ast.attributes) types.push(type);
+		}
+		return types;
+	}
 
-    static get_ExportsTypes(ast) {
-        const types = SDML_Compute.get_HintType(ast);
-        if (types.length === 0)
-            throw new SDML_Compile_Error(`compute node required a type hint like: <compute int exp="..." />`);
-        if (types.length > 1)
-            throw new SDML_Compile_Error(`multiple type hints appear in node <compute ${types.join(' ')} exp="..." />`);
-        return { result: ALL_INPUTS_TYPES[types[0]].datatype() };
-    }
+	static get_ExportsTypes(ast) {
+		const types = SDML_Compute.get_HintType(ast);
+		if (types.length === 0)
+			throw new SDML_Compile_Error(`compute node required a type hint like: <compute int exp="..." />`);
+		if (types.length > 1)
+			throw new SDML_Compile_Error(`multiple type hints appear in node <compute ${types.join(' ')} exp="..." />`);
+		return { result: ALL_INPUTS_TYPES[types[0]].datatype() };
+	}
 }
 
 registe_Tag('compute', SDML_Compute);
