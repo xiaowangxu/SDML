@@ -30,7 +30,8 @@ class STL_Node extends SDML_Node {
         this.r = {n: {geometry: [${this.class_name}_stl.clone()]}, e: {}};
     }
     dispose() {
-        this.geometry.dispose();
+        this.r.n.geometry[0].dispose();
+		this.r.n.geometry = undefined;
     }
 }`;
 		this.env.add_Template(`${this.class_name}_stl`, `var ${this.class_name}_stl = undefined;`);

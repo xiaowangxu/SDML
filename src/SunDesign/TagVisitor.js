@@ -108,7 +108,7 @@ export class SDML_Compiler_Visitor {
 			}
 			const [exp_code, exp_opt, exp_err] = parse_Expression(exp_str, `${this.id}_param_${param}`, this.scope.inputs_type, this.scope.nodes_type);
 			if (exp_code === null) {
-				err.push(`compiling parameter '${param}' failed in <${this.name} test="${exp_str}"/>, here are the error messages from the expression compile sub-module:\n${exp_err.join("\n\n")}`);
+				err.push(`compiling parameter '${param}' failed in <${this.name} ${param}="${exp_str}"/>, here are the error messages from the expression compile sub-module:\n${exp_err.join("\n\n")}`);
 				continue;
 			}
 			else if (!typeCheck(datatype, exp_opt.datatype)) {

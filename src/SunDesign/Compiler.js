@@ -1103,7 +1103,7 @@ export class SDML_Compile_Scope {
 			const map = this.outputs[output];
 			const [exp_code, exp_opt, exp_err] = parse_Expression(map.str, `${this.uis}_export_${output}`, this.inputs_type, this.nodes_type);
 			if (exp_code === null) {
-				throw new SDML_Compile_Error(`compiling output '${output}' failed in <output test="${map.str}"/>, here are the error messages from the expression compile sub-module:\n${exp_err.join("\n\n")}`);
+				throw new SDML_Compile_Error(`compiling output '${output}' failed in <output ${output}="${map.str}"/>, here are the error messages from the expression compile sub-module:\n${exp_err.join("\n\n")}`);
 			}
 			else if (!typeCheck(map.datatype, exp_opt.datatype)) {
 				throw new SDML_Compile_Error(`type-checking output '${output}' failed in <output test="${map.str}"/>, here are the current types:\nrequired: ${typeToString(map.datatype)}\nbut has: ${typeToString(exp_opt.datatype)}`);

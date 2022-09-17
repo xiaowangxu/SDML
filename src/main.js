@@ -10,7 +10,7 @@ import { typeToString } from './SunDesign/sPARks.js';
 
 const program = new Command();
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 
 const TITLE = `    _____ _____  __  __ _      _____                      _ _           
   / ____|| ___ \\|  \\/  | |    / ____|                    (_) |          
