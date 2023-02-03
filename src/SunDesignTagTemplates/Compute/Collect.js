@@ -101,4 +101,4 @@ class SDML_Collect extends SDML_Compiler_Visitor {
     }
 }
 
-registe_Tag('collect', SDML_Collect);
+// registe_Tag('collect', SDML_Collect);

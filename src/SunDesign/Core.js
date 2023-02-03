@@ -186,7 +186,7 @@ export const ALL_INPUTS_TYPES = {
 		default: (val) => { return val },
 		datatype: () => ExpTypes.array(ExpTypes.base(ExpTypes.vec3)),
 	},
-	'material': {
+	'material-arr': {
 		default: (val) => { return val },
 		datatype: () => ExpTypes.array(ExpTypes.base('material')),
 	},

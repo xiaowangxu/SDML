@@ -84,4 +84,4 @@ class SDML_Compute extends SDML_Compiler_Visitor {
 	}
 }
 
-registe_Tag('compute', SDML_Compute);
+// registe_Tag('compute', SDML_Compute);

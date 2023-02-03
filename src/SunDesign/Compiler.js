@@ -497,7 +497,7 @@ class SDML_Component extends SDML_Node {
 		const inputs = this.xmlast.inputs ?? [];
 		for (let i of inputs) {
 			const type = i.tagName;
-			const { default: defaultval, name } = i.attributes;
+			const { default: defaultval, name, hint } = i.attributes;
 			if (name === undefined) {
 				throw new Error(`input does not have a name in\n<inputs>\n\t<${type}/>\n</inputs>\nin ${this.url}`);
 			}
@@ -513,6 +513,7 @@ class SDML_Component extends SDML_Node {
 					this.inputs[name] = {
 						uid: this.env.uid,
 						datatype: datatype,
+						hint
 					}
 				}
 				else {
@@ -531,6 +532,7 @@ class SDML_Component extends SDML_Node {
 						uid: this.env.uid,
 						default: code,
 						datatype: datatype,
+						hint
 					}
 				}
 			}
@@ -1331,7 +1333,7 @@ export class SDML_Compile_CodeGen {
 		const deps = [...this.scope.scope_deps];
 		const map = this.scope.inputs;
 		for (const param of deps) {
-			arr.push(`${param}: {datatype: '${typeToString(map[param].datatype)}', default: ${map[param].default ?? 'null'}}`);
+			arr.push(`${param}: {datatype: '${typeToString(map[param].datatype)}', default: ${map[param].default ?? 'null'}, hint: ${map[param].hint ?? "null"}}`);
 		}
 		return `{${arr.join(', ')}}`;
 	}

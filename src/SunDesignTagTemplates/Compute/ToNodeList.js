@@ -81,4 +81,4 @@ class SDML_ToNodeList extends SDML_Compiler_Visitor {
     }
 }
 
-registe_Tag('to-node-list', SDML_ToNodeList);
+// registe_Tag('to-node-list', SDML_ToNodeList);
