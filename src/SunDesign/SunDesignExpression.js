@@ -2535,7 +2535,7 @@ export const SunDesignExpressionVisitor = function (prelude = SunDesignExpressio
 						datatype: "base",
 						value: "$unknown"
 					}
-					return [node, new BaseError("Function Not Found", `\ntry to call function ${iden} with argumants (${datatypes.map(d => typeToString(d)).join(", ")})${func === null ? '' : `\n${func}`}`, node.$start, node.$end)]
+					return [node, new BaseError("Function Not Found", `\ntry to call function ${iden} with argumants (${datatypes.map(d => typeToString(d)).join(", ")})${func === null ? '' : `\n${func}`}\nhints: try ${FUNCS[iden].map(p=>`${iden}(${p.inputs.map(i=>i.value).join(", ")})`).join(", ")}`, node.$start, node.$end)]
 				}
 				node.datatype = ans
 				node.func = func

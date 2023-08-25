@@ -60,7 +60,7 @@ class SDML_ToNode extends SDML_Compiler_Visitor {
 	}
 
 	static get type() {
-		return undefined;
+		return Types.NONE;
 	}
 
 	static get_HintType(ast) {

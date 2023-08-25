@@ -9,7 +9,5 @@
 	</curves>
 </slots>
 <template>
-	<path>
-		<slot name="curves" />
-	</path>
+	<vec2 />
 </template>

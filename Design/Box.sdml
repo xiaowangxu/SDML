@@ -1,24 +1,14 @@
 <flags />
 <refs>
-	<component id="Curves" url="./Design/BoxTest.sdml" />
+	<component id="Curves" url="./BoxTest.sdml" />
 </refs>
 <inputs>
 	<int name="time" default="0" />
 </inputs>
+<type>
+	<object3d/>
+</type>
 <template>
-	<Curves>
-		<curves param>
-			<curveellipse />
-			<curveline />
-			<curveellipse />
-			<for array="range(2)" index="idx">
-				<curveellipse />
-				<curveline />
-				<if test="true">
-					<curveline />
-					<boxgeometry />
-				</if>
-			</for>
-		</curves>
-	</Curves>
+	<object3d/>
+	<perspectivecamera/>
 </template>

@@ -1,0 +1,4 @@
+File: .\Box.sdml
+graph LR
+Input_time_2((time))
+Node_4(vec2 id=$node_3)

@@ -527,7 +527,6 @@ class SDML_Component extends SDML_Node {
 					if (!typeCheck(datatype, opt.datatype)) {
 						throw new Error(`default value is type of ${typeToString(opt.datatype)}, not type of ${type} in\n<inputs>\n\t<${type} name="${name}" default="${defaultval}"/>\n</inputs>\nin ${this.url}`);
 					}
-					// console.log(code, ans.datatype, ans.constant, ans.value, opt)
 					this.inputs[name] = {
 						uid: this.env.uid,
 						default: code,

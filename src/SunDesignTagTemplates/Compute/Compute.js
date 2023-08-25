@@ -67,21 +67,19 @@ class SDML_Compute extends SDML_Compiler_Visitor {
 	}
 
 	static get_HintType(ast) {
-		const types = [];
-		for (const type in ALL_INPUTS_TYPES) {
-			if (type in ast.attributes) types.push(type);
-		}
+		const types = ast.attributes.type ? [ast.attributes.type] : [];
+		// for (const type in ALL_INPUTS_TYPES) {
+		//     if (type in ast.attributes) types.push(type);
+		// }
+		if (types.length === 0)
+			throw new SDML_Compile_Error(`compute node required a type hint like: <compute type="int" exp="..." />`);
 		return types;
 	}
 
 	static get_ExportsTypes(ast) {
 		const types = SDML_Compute.get_HintType(ast);
-		if (types.length === 0)
-			throw new SDML_Compile_Error(`compute node required a type hint like: <compute int exp="..." />`);
-		if (types.length > 1)
-			throw new SDML_Compile_Error(`multiple type hints appear in node <compute ${types.join(' ')} exp="..." />`);
 		return { result: ALL_INPUTS_TYPES[types[0]].datatype() };
 	}
 }
 
-// registe_Tag('compute', SDML_Compute);
+registe_Tag('compute', SDML_Compute);
